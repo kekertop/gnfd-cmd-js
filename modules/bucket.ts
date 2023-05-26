@@ -1,4 +1,3 @@
-/* COMMAND LINE COMMANDS BEGIN */
 interface cmdCreateBucketInterface {
     primarySPFlag: string;
     paymentFlag: string;
@@ -20,6 +19,7 @@ interface cmdPutBucketPolicyInterface {
     expireTimeFlag: string;
 }
 
+/* COMMAND LINE COMMANDS BEGIN */
 function cmdCreateBucket(params: cmdCreateBucketInterface) {
 
 }
