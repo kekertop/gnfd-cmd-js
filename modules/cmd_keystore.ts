@@ -1,15 +1,9 @@
-interface cmdGenerateKeyInterface {
-    privKeyFileFlag: string;
+interface GenerateKeyOptions {
+    keyFilePath?: string;
+    privKeyFileFlag?: string;
 }
 
-interface generateKeyInterface {
-    cliContext: any;
-}
 
-function cmdGenerateKey(params: cmdGenerateKeyInterface) {
-
-}
-
-function generateKey(params: generateKeyInterface) {
+function generateKey(params: GenerateKeyOptions) {
 
 }

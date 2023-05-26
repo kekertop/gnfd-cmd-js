@@ -1,33 +1,17 @@
-interface cmdTransferOutInterface {
-    toAddressFlag: string;
-    amountFlag: string;
+interface TransferOutOptions {
+    toAddressFlag?: string;
+    amountFlag?: string;
 }
 
-interface transferOutInterface {
-    cliContext: any;
+interface MirrorResourceOptions {
+    resourceFlag?: string;
+    IdFlag?: string;
 }
 
-interface cmdMirrorResourceInterface {
-    resourceFlag: string;
-    IdFlag: string;
-}
-
-interface mirrorInterface {
-    cliContext: any;
-}
-
-function cmdTransferOut(params: cmdTransferOutInterface) {
+function transferOut(params: TransferOutOptions) {
 
 }
 
-function transferOut(params: transferOutInterface) {
-
-}
-
-function cmdMirrorResource(params: cmdMirrorResourceInterface) {
-
-}
-
-function mirror(params: mirrorInterface) {
+function mirror(params: MirrorResourceOptions) {
 
 }

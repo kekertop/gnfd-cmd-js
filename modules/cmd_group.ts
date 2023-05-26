@@ -1,42 +1,37 @@
-interface cmdCreateGroupInterface {
-    initMemberFlag: string;
+interface CreateGroupOptions {
+    groupUrl: string;
+    initMemberFlag?: string;
 }
 
-interface cmdUpdateGroupInterface {
-    addMemberFlag: string;
-    removeMemberFlag: string;
-    groupOwnerFlag: string;
+interface UpdateGroupOptions {
+    groupUrl: string,
+    addMemberFlag?: string;
+    removeMemberFlag?: string;
+    groupOwnerFlag?: string;
 }
 
-interface createGroupInterface {
-    cliContext: any;
+interface UpdateGroupMemberOptions {
+    addMemberFlag?: string;
+    removeMemberFlag?: string;
 }
 
-interface updateGroupMemberInterface {
-    cliContext: any;
+interface GroupOwnerOptions {
+    client: any; //what is that??!?!?
+    groupOwnerFlag?: string;
 }
 
-interface getGroupOwnerInterface {
-    cliContext: any;
-    client: any;
-}
-
-function cmdCreateGroup(params: cmdCreateGroupInterface) {
-
-}
-
-function cmdUpdateGroup(params: cmdUpdateGroupInterface) {
+function createGroup(params: CreateGroupOptions) {
 
 }
 
-function createGroup(params: createGroupInterface) {
+//seems like it is not fully finished
+function updateGroup(params: UpdateGroupOptions) {
+
+}
+function updateGroupMember(params: UpdateGroupMemberOptions) {
 
 }
 
-function updateGroupMember(params: updateGroupMemberInterface) {
-
-}
-
-function getGroupOwner(params: getGroupOwnerInterface) {
+function getGroupOwner(params: GroupOwnerOptions) {
 
 }

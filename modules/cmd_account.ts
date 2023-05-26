@@ -1,107 +1,57 @@
-interface cmdCreatePaymentAccountInterface {
-    //don't know
-    //in go, it was cli.Context
-    cliContext: any;
-}
-
 interface depositInterface {
-    //don't know
-    //in go, it was cli.Context
     cliContext: any;
 }
 
-interface cmdPaymentDepositInterface {
-    toAddressFlag: string;
-    amountFlag: string;
+interface depositOptions {
+    toAddressFlag?: string;
+    amountFlag?: string;
 }
 
-interface cmdPaymentWithdrawInterface {
-    fromAddressFlag: string;
-    amountFlag: string;
+interface WithdrawOptions {
+    fromAddressFlag?: string;
+    amountFlag?: string;
 }
 
-interface withdrawInterface {
-    //don't know
-    //in go, it was cli.Context
-    cliContext: any;
+interface ListPaymentAccountsOptions {
+    ownerAddr: string;
+    ownerAddressFlag?: string;
 }
 
-interface cmdListPaymentAccountsInterface {
-    ownerAddressFlag: string;
+interface GetAccountBalanceOptions {
+    addressFlag?: string;
 }
 
-interface listPaymentAccountsInterface {
-    //don't know
-    //in go, it was cli.Context
-    cliContext: any;
+interface TransferOptions {
+    toAddressFlag?: string;
+    amountFlag?: string;
 }
 
-interface cmdGetAccountBalanceInterface {
-    addressFlag: string;
-}
 
-interface getAccountBalanceInterface {
-    //don't know
-    //in go, it was cli.Context
-    cliContext: any;
-}
 
-interface cmdTransferInterface {
-    toAddressFlag: string;
-    amountFlag: string;
-}
-
-interface transferInterface {
-    //don't know
-    //in go, it was cli.Context
-    cliContext: any;
-}
-
-/* COMMAND LINE COMMANDS BEGIN */
-function cmdCreatePaymentAccount() {
+function createPaymentAccount() {
 
 }
 
-function createPaymentAccount(params: cmdCreatePaymentAccountInterface) {
+
+function deposit(params: depositOptions) {
 
 }
 
-function cmdPaymentDeposit(params: cmdPaymentDepositInterface) {
+
+function withdraw(params: WithdrawOptions) {
 
 }
 
-function deposit(params: depositInterface) {
+
+function listPaymentAccounts(params: ListPaymentAccountsOptions) {
 
 }
 
-function cmdPaymentWithdraw(params: cmdPaymentWithdrawInterface) {
+function getAccountBalance(params: GetAccountBalanceOptions) {
 
 }
 
-function withdraw(params: withdrawInterface) {
 
-}
-
-function cmdListPaymentAccounts(params: cmdListPaymentAccountsInterface) {
-
-}
-
-function listPaymentAccounts(params: listPaymentAccountsInterface) {
-
-}
-
-function cmdGetAccountBalance(params: cmdGetAccountBalanceInterface) {
-
-}
-
-function getAccountBalance(params: getAccountBalanceInterface) {
-
-}
-
-function cmdTransfer(params: cmdTransferInterface) {
-
-}
-
-function transfer(params: transferInterface) {
+function transfer(params: TransferOptions) {
 
 }

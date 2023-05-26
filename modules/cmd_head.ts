@@ -1,57 +1,35 @@
-interface cmdHeadGroupInterface {
-    groupOwnerFlag: string;
+interface HeadObjectOptions {
+    objectUrl: string;
 }
 
-interface cmdHeadGroupMemberInterface {
-    groupOwnerFlag: string;
-    headMemberFlag: string;
+interface HeadBucketOptions {
+    bucketUrl: string;
 }
 
-interface headObjectInterface {
-    cliContext: any;
+interface HeadGroupOptions {
+    groupUrl: string;
+    groupOwnerFlag?: string;
 }
 
-interface headBucketInterface {
-    cliContext: any;
-}
-
-interface headGroupInterface {
-    cliContext: any;
-}
-
-interface headGroupMemberInterface {
-    cliContext: any;
+interface HeadGroupMemberOptions {
+    groupUrl: string;
+    groupOwnerFlag?: string;
+    headMemberFlag?: string;
 }
 
 
-function cmdHeadObj() {
+function headObject(params: HeadObjectOptions) {
 
 }
 
-function cmdHeadBucket() {
+function headBucket(params: HeadBucketOptions) {
 
 }
 
-function cmdHeadGroup(params: cmdHeadGroupInterface) {
+function headGroup(params: HeadGroupOptions) {
 
 }
 
-function cmdHeadGroupMember(params: cmdHeadGroupMemberInterface) {
-
-}
-
-function headObject(params: headObjectInterface) {
-
-}
-
-function headBucket(params: headBucketInterface) {
-
-}
-
-function headGroup(params: headGroupInterface) {
-
-}
-
-function headGroupMember(params: headGroupMemberInterface) {
+function headGroupMember(params: HeadGroupMemberOptions) {
 
 }

@@ -1,27 +1,17 @@
-interface cmdBuyQuotaInterface {
-    chargeQuotaFlag: Number;
+interface BuyQuotaOptions {
+    bucketUrl: string;
+    chargeQuotaFlag?: number;
 }
 
-interface buyQuotaForBucketInterface {
-    cliContext: any;
+interface QuotaInfoOptions {
+    bucketUrl: string;
 }
 
-interface getQuotaInfoInterface {
-    cliContext: any;
-}
 
-function cmdBuyQuota(params: cmdBuyQuotaInterface) {
-
-}
-
-function cmdGetQuotaInfo() {
+function buyQuotaForBucket(params: BuyQuotaOptions) {
 
 }
 
-function buyQuotaForBucket(params: buyQuotaForBucketInterface) {
-
-}
-
-function getQuotaInfo(params: getQuotaInfoInterface) {
+function getQuotaInfo(params: QuotaInfoOptions) {
 
 }

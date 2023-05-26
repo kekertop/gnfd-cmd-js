@@ -1,26 +1,19 @@
-interface listSPInterface {
-    cliContext: any;
+interface QuerySPOptions {
+    endpoint: string; // "<Storage Provider endpoint>",
 }
 
-interface querySPInterface {
-    cliContext: any;
-}
-function cmdListSP() {
-
+interface GetQuotaPriceOptions {
+    endpoint: string; // "<Storage Provider endpoint>",
 }
 
-function cmdGetSP() {
+function listSP() {
 
 }
 
-function cmdGetQuotaPrice() {
+function querySP(params: QuerySPOptions) {
 
 }
 
-function listSP(params: listSPInterface) {
-
-}
-
-function querySP(params: querySPInterface) {
+function getQuotaPrice(params: GetQuotaPriceOptions) {
 
 }

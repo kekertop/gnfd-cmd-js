@@ -3,36 +3,36 @@ interface Key {
     privateKey: string;
 }
 
-interface encryptedkey {
+interface EncryptedKey {
     address: string;
     crypto: any;
 }
 
-interface EncryptKeyInterface {
+interface EncryptKeyOptions {
     key: Key;
     auth: string;
     scryptN: any;
-    scryptP: Number;
+    scryptP: number;
 }
 
-interface DecryptKeyInterface {
+interface DecryptKeyOptions {
     keyJson: Uint8Array;
     auth: string;
 }
 
-interface decryptKeyInterface {
-    key: encryptedkey;
+interface PrivDecryptKeyOptions {
+    key: EncryptedKey;
     auth: string;
 }
 
-function EncryptKey(params: EncryptKeyInterface) {
+function encryptKey(params: EncryptKeyOptions) {
 
 }
 
-function DecryptKey(params: DecryptKeyInterface) {
+function decryptKey(params: DecryptKeyOptions) {
 
 }
 
-function decryptKey(params: decryptKeyInterface) {
+function private_decryptKey(params: PrivDecryptKeyOptions) {
 
 }

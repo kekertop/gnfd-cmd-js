@@ -1,21 +1,33 @@
-interface newClientInterface {
-    //don't know
-    //in go, it was cli.Context
-    cliContext: any;
+interface NewClientOptions {
+    config?: string;
+    rpcAddr?: string;
+    chainId?: string;
+    keystore?: string;
+    host?: string;
 }
 
-interface parseInterface {
+interface ParseBucketAndObjectOptions {
     urlPath: string;
 }
 
-function newClient(params: newClientInterface){
+interface ParseBucketOptions {
+    urlPath: string;
+}
+
+function newClient(params: NewClientOptions){
 
 }
 
-function parseBucketAndObject(params: parseInterface) {
+function parseBucketAndObject(params: ParseBucketAndObjectOptions) {
 
 }
 
-function parseBucket(params: parseInterface) {
+function parseBucket(params: ParseBucketOptions) {
 
+}
+
+module.exports = {
+    newClient: newClient,
+    parseBucketAndObject: parseBucketAndObject,
+    parseBucket: parseBucket
 }

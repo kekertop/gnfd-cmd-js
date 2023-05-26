@@ -1,50 +1,35 @@
-interface cmdCreateBucketInterface {
-    primarySPFlag: string;
-    paymentFlag: string;
-    chargeQuotaFlag: string;
-    visibilityFlag: string;
+interface CreateBucketOptions {
+    bucketUrl: string;
+    primarySPFlag?: string;
+    paymentFlag?: string;
+    chargeQuotaFlag?: number;
+    visibilityFlag?: any;
 }
 
-interface cdmUpdateBucketInterface {
-    paymentFlag: string;
-    chargeQuotaFlag: string;
-    visibilityFlag: string;
+interface UpdateBucketOptions {
+    bucketUrl: string;
+    paymentFlag?: string;
+    chargeQuotaFlag?: number;
+    visibilityFlag?: any;
 }
 
-interface cmdPutBucketPolicyInterface {
-    groupIDFlag: string;
-    granteeFlag: string;
-    actionsFlag: string;
-    effectFlag: string;
-    expireTimeFlag: string;
+interface PutBucketPolicyOptions {
+    bucketUrl: string;
+    groupIDFlag?: number;
+    granteeFlag?: string;
+    actionsFlag?: string;
+    effectFlag?: any;
+    expireTimeFlag?: number;
 }
 
-/* COMMAND LINE COMMANDS BEGIN */
-function cmdCreateBucket(params: cmdCreateBucketInterface) {
-
-}
-
-function cdmUpdateBucket(params: cdmUpdateBucketInterface) {
-
-}
-
-function cmdListBuckets() {
-
-}
-
-function cmdPutBucketPolicy(params: cmdPutBucketPolicyInterface) {
-
-}
-
-/* COMMAND LINE COMMANDS END */
 
 // createBucket send the create bucket request to storage provider
-function createBucket() {
+function createBucket(params: CreateBucketOptions) {
 
 }
 
 // updateBucket send the create bucket request to storage provider
-function updateBucket() {
+function updateBucket(params: UpdateBucketOptions) {
 
 }
 
@@ -53,6 +38,13 @@ function listBuckets() {
 
 }
 
-function putBucketPolicy() {
+function putBucketPolicy(params: PutBucketPolicyOptions) {
 
+}
+
+module.exports = {
+    createBucket: createBucket,
+    updateBucket: updateBucket,
+    listBuckets: listBuckets,
+    putBucketPolicy: putBucketPolicy
 }

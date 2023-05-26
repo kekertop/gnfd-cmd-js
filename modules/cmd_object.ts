@@ -1,140 +1,93 @@
-interface cmdPutObjInterface {
-    secondarySPFlag: string;
-    contentTypeFlag: string;
-    visibilityFlag: string;
-    folderFlag: string;
+interface PutObjectOptions {
+    filePath: string; //ArgsUsage: "[filePath] OBJECT-URL"
+    secondarySPFlag?: string;
+    contentTypeFlag?: string;
+    visibilityFlag?: any;
+    folderFlag?: string;
 }
 
-interface cmdCreateFolderInterface {
-    visibilityFlag: string;
-    objectPrefix: string;
+interface CreateFolderOptions {
+    objectUrl: string;
+    visibilityFlag?: any;
+    objectPrefix?: string;
 }
 
-interface cmdGetObjInterface {
-    startOffsetFlag: Number;
-    endOffsetFlag: Number;
+interface GetObjOptions {
+    filePath: string; //ArgsUsage: "[filePath] OBJECT-URL"
+    startOffsetFlag: number;
+    endOffsetFlag: number;
 }
 
-interface cmdPutObjPolicyInterface {
-    groupIDFlag: Number;
-    granteeFlag: string;
-    actionsFlag: string;
-    effectFlag: string;
-    expireTimeFlag: Number;
+interface PutObjectPolicyOptions {
+    objectUrl: string; //ArgsUsage: "[filePath] OBJECT-URL"
+    groupIDFlag?: number;
+    granteeFlag?: string;
+    actionsFlag?: any;
+    effectFlag?: string;
+    expireTimeFlag?: number;
 }
 
-interface cmdUpdateObjectInterface {
-    visibilityFlag: string;
+interface UpdateObjectOptions {
+    objectUrl: string;
+    visibilityFlag?: any;
 }
 
-interface putObjectInterface{
-    cliContext: any;
+interface CancelCreateObjectOptions {
+    objectUrl: string;
 }
 
-interface putObjectPolicyInterface {
-    cliContext: any;
+interface ListObjectsOptions {
+    bucketUrl: string;
 }
 
-interface getObjectInterface {
-    cliContext: any;
+interface UploadInfoOptions {
+    objectUrl: string;
 }
 
-interface cancelCreateObjectInterface {
-    cliContext: any;
-}
-
-interface listObjectsInterface {
-    cliContext: any;
-}
-
-interface createFolderInterface {
-    cliContext: any;
-}
-
-interface updateObjectInterface {
-    cliContext: any;
-}
-
-interface getUploadInfoInterface {
-    cliContext: any;
-}
-
-interface pathExistsInterface {
+interface PathExistsOptions {
     path: string;
 }
 
-interface getObjAndBucketNamesInterface {
+interface GetObjAndBucketNamesOptions {
     urlInfo: string;
 }
 
-function cmdPutObj(params: cmdPutObjInterface) {
+function putObject(params: PutObjectOptions) {
 
 }
 
-function cmdGetObj(params: cmdGetObjInterface) {
+function putObjectPolicy(params: PutObjectPolicyOptions) {
 
 }
 
-function cmdCreateFolder(params: cmdCreateFolderInterface) {
+function getObject(params: GetObjOptions) {
 
 }
 
-function cmdCancelObjects() {
+function cancelCreateObject(params: CancelCreateObjectOptions) {
 
 }
 
-function cmdListObjects() {
+function listObjects(params: ListObjectsOptions) {
 
 }
 
-function cmdPutObjPolicy(params: cmdPutObjPolicyInterface) {
+function createFolder(params: CreateFolderOptions) {
 
 }
 
-function cmdUpdateObject(params: cmdUpdateObjectInterface) {
+function updateObject(params: UpdateObjectOptions) {
 
 }
 
-function cmdGetUploadProgress() {
+function getUploadInfo(params: UploadInfoOptions) {
 
 }
 
-function putObject(params: putObjectInterface) {
+function pathExists(params: PathExistsOptions) {
 
 }
 
-function putObjectPolicy(params: putObjectPolicyInterface) {
-
-}
-
-function getObject(params: getObjectInterface) {
-
-}
-
-function cancelCreateObject(params: cancelCreateObjectInterface) {
-
-}
-
-function listObjects(params: listObjectsInterface) {
-
-}
-
-function createFolder(params: createFolderInterface) {
-
-}
-
-function updateObject(params: updateObjectInterface) {
-
-}
-
-function getUploadInfo(params: getUploadInfoInterface) {
-
-}
-
-function pathExists(params: pathExistsInterface) {
-
-}
-
-function getObjAndBucketNames(params: getObjAndBucketNamesInterface) {
+function getObjAndBucketNames(params: GetObjAndBucketNamesOptions) {
 
 }

@@ -1,11 +1,8 @@
-interface computeHashRootInterface {
-    cliContext: any;
+interface ComputeHashRootOptions {
+    filePath: string;
 }
 
-function cmdCalHash() {
 
-}
-
-function computeHashRoot(params: computeHashRootInterface) {
+function computeHashRoot(params: ComputeHashRootOptions) {
 
 }

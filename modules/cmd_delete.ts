@@ -1,35 +1,24 @@
-interface deleteBucketInterface {
-    cliContext: any;
+interface DeleteBucketOptions {
+    bucketUrl: string;
 }
 
-interface deleteObjectInterface {
-    cliContext: any;
+interface DeleteObjectOptions {
+    bucketUrl: string;
 }
 
-interface deleteGroupInterface {
-    cliContext: any;
+interface DeleteGroupOptions {
+    groupUrl: string;
 }
 
-function cmdDelBucket() {
 
-}
-
-function cmdDelObject() {
+function deleteBucket(params: DeleteBucketOptions) {
 
 }
 
-function cmdDelGroup () {
+function deleteObject(params: DeleteObjectOptions) {
 
 }
 
-function deleteBucket(params: deleteBucketInterface) {
-
-}
-
-function deleteObject(params: deleteObjectInterface) {
-
-}
-
-function deleteGroup(params: deleteGroupInterface) {
+function deleteGroup(params: DeleteGroupOptions) {
 
 }
