@@ -6,7 +6,8 @@ import path from "path";
 export interface Config {
   rpcAddress: string,
   chainId: string,
-  password: string
+  publicKey: string,
+  privateKey: string
 }
 
 export class ConfigService {
@@ -68,12 +69,14 @@ export class ConfigService {
 
     const rpcAddress = await rl.question("RPC Address: ");
     const chainId = await rl.question("Chain ID: ");
-    const password = await rl.question("Password: ");
+    const publicKey = await rl.question("Public Key: ");
+    const privateKey = await rl.question('Private Key: ');
 
     return {
       rpcAddress: rpcAddress,
       chainId: chainId,
-      password: password
+      publicKey: publicKey,
+      privateKey: privateKey
     }
   }
 
