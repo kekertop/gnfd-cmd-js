@@ -1,19 +1,31 @@
-const {promises: fs} = require('fs');
-const path = require('path');
-const {createInterface} = require('readline/promises');
+import {createInterface} from "readline/promises";
+
+import {promises as fs} from "fs";
+import path from "path";
 
 export interface Config {
   rpcAddress: string,
   chainId: string,
-  password: string
+  publicKey: string,
+  privateKey: string
 }
 
 export class ConfigService {
   private readonly configLocation: string;
   private config: Config;
 
-  constructor(configLocation: string) {
+  private static instance: ConfigService;
+
+  private constructor(configLocation: string) {
     this.configLocation = configLocation;
+  }
+
+  public static getInstance(configLocation?: string): ConfigService {
+    if (!this.instance) {
+      this.instance = new ConfigService(configLocation);
+    }
+
+    return this.instance;
   }
 
   public async getConfig(): Promise<Config> {
@@ -67,12 +79,14 @@ export class ConfigService {
 
     const rpcAddress = await rl.question("RPC Address: ");
     const chainId = await rl.question("Chain ID: ");
-    const password = await rl.question("Password: ");
+    const publicKey = await rl.question("Public Key: ");
+    const privateKey = await rl.question('Private Key: ');
 
     return {
       rpcAddress: rpcAddress,
       chainId: chainId,
-      password: password
+      publicKey: publicKey,
+      privateKey: privateKey
     }
   }
 

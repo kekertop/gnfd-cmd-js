@@ -12,8 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@bnb-chain/greenfiled-file-handle": "^0.2.0",
-    "commander": "^10.0.1",
-    "yargs": "^17.7.2"
+    "commander": "^10.0.1"
   },
   "devDependencies": {
     "@bnb-chain/greenfield-chain-sdk": "^0.2.0",
