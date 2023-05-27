@@ -1,9 +1,9 @@
-import {getBucketNameByUrl} from "./utils";
 import {Client} from "@bnb-chain/greenfield-chain-sdk";
 import {newClient} from "./client";
 import {VisibilityType} from "@bnb-chain/greenfield-cosmos-types/greenfield/storage/common";
 import {StorageProvider} from '@bnb-chain/greenfield-cosmos-types/greenfield/sp/types';
 import {ConfigService} from "./config";
+import {executeTransaction} from "../utils/transactionUtils";
 
 
 const DEFAULT_ACCOUNT = "0x22ED18D6c79f91ba186b23f1920Df4a2f2Ca1E3B"
@@ -15,41 +15,18 @@ class AccountService {
         const client = await newClient();
         const config = await ConfigService.getInstance().getConfig();
 
-        let transferTx
+        let createPayAccTx
         try {
-            transferTx = await client.account.createPaymentAccount({
+            createPayAccTx = await client.account.createPaymentAccount({
                 creator: config.publicKey
             });
         } catch(ex) {
             throw new Error("Unable to create payment account")
         }
 
-        let simulateInfo
-        try {
-            simulateInfo = await transferTx.simulate({
-                denom: 'BNB',
-            });
-        } catch(ex) {
-            throw new Error("Unable to obtain gas fees")
-        }
+        const response = await executeTransaction(createPayAccTx)
 
-        let transactionHash
-        try {
-            const broadcastRes = await transferTx.broadcast({
-                denom: 'BNB',
-                gasLimit: Number(simulateInfo.gasLimit),
-                gasPrice: simulateInfo.gasPrice,
-                payer: config.publicKey,
-                granter: '',
-                privateKey: config.privateKey,
-            });
-
-            transactionHash = broadcastRes.transactionHash
-        } catch(ex) {
-            throw new Error("Unable to broadcast transaction")
-        }
-
-        console.log(`Successfully created payment account for stream account "${config.publicKey}". Transaction: ${transactionHash}`);
+        console.log(`Successfully created payment account for stream account "${config.publicKey}". Transaction: ${response.transactionHash}`);
     }
 
     public async deposit(
@@ -60,9 +37,9 @@ class AccountService {
         const client = await newClient();
         const config = await ConfigService.getInstance().getConfig();
 
-        let transferTx
+        let depositTx
         try {
-            transferTx = await client.payment.deposit({
+            depositTx = await client.payment.deposit({
                 creator: config.publicKey,
                 to: toAddressFlag,
                 amount: amountFlag,
@@ -71,32 +48,9 @@ class AccountService {
             throw new Error("Unable to initialize deposit to payment account")
         }
 
-        let simulateInfo
-        try {
-            simulateInfo = await transferTx.simulate({
-                denom: 'BNB',
-            });
-        } catch(ex) {
-            throw new Error("Unable to obtain gas fees")
-        }
+        const response = await executeTransaction(depositTx);
 
-        let transactionHash
-        try {
-            const broadcastRes = await transferTx.broadcast({
-                denom: 'BNB',
-                gasLimit: Number(simulateInfo.gasLimit),
-                gasPrice: simulateInfo.gasPrice,
-                payer: config.publicKey,
-                granter: '',
-                privateKey: config.privateKey,
-            });
-
-            transactionHash = broadcastRes.transactionHash
-        } catch(ex) {
-            throw new Error("Unable to broadcast transaction")
-        }
-
-        console.log(`Successfully deposited "${amountFlag}" to "${toAddressFlag}" payment account. Transaction: ${transactionHash}`)
+        console.log(`Successfully deposited "${amountFlag}" to "${toAddressFlag}" payment account. Transaction: ${response.transactionHash}`)
     }
 
     public async withdraw(
@@ -107,9 +61,9 @@ class AccountService {
         const client = await newClient();
         const config = await ConfigService.getInstance().getConfig();
 
-        let transferTx
+        let withdrawTx
         try {
-            transferTx = await client.payment.withdraw({
+            withdrawTx = await client.payment.withdraw({
                 creator: config.publicKey,
                 from: fromAddressFlag,
                 amount: amountFlag,
@@ -118,32 +72,9 @@ class AccountService {
             throw new Error("Unable to initialize withdraw from payment account")
         }
 
-        let simulateInfo
-        try {
-            simulateInfo = await transferTx.simulate({
-                denom: 'BNB',
-            });
-        } catch(ex) {
-            throw new Error("Unable to obtain gas fees")
-        }
+        const response = await executeTransaction(withdrawTx);
 
-        let transactionHash
-        try {
-            const broadcastRes = await transferTx.broadcast({
-                denom: 'BNB',
-                gasLimit: Number(simulateInfo.gasLimit),
-                gasPrice: simulateInfo.gasPrice,
-                payer: config.publicKey,
-                granter: '',
-                privateKey: config.privateKey,
-            });
-
-            transactionHash = broadcastRes.transactionHash
-        } catch(ex) {
-            throw new Error("Unable to broadcast transaction")
-        }
-
-        console.log(`Successfully withdrew "${amountFlag}" from "${fromAddressFlag}" payment account. Transaction: ${transactionHash}`)
+        console.log(`Successfully withdrew "${amountFlag}" from "${fromAddressFlag}" payment account. Transaction: ${response.transactionHash}`)
     }
 
 
@@ -153,13 +84,13 @@ class AccountService {
         const client = await newClient();
         const config = await ConfigService.getInstance().getConfig();
 
-        let transferTx
+        let getListPayAccTx
         try {
-            transferTx = await client.account.getPaymentAccountsByOwner(ownerAddressFlag || DEFAULT_ACCOUNT);
+            getListPayAccTx = await client.account.getPaymentAccountsByOwner(ownerAddressFlag || DEFAULT_ACCOUNT);
         } catch(ex) {
             throw new Error("Cannot get payments accounts by owner")
         }
-        console.log(transferTx.paymentAccounts)
+        console.log(getListPayAccTx.paymentAccounts)
     }
 
 
@@ -169,16 +100,16 @@ class AccountService {
         const client = await newClient();
         const config = await ConfigService.getInstance().getConfig();
 
-        let transferTx
+        let getAccBalTx
         try {
-            transferTx = await client.account.getAccountBalance({
+            getAccBalTx = await client.account.getAccountBalance({
                 address: addressFlag || DEFAULT_ACCOUNT,
                 denom: 'BNB'
             });
         } catch(ex) {
             throw new Error("Unable to retrieve account balance")
         }
-        console.log(`Account ${addressFlag} has ${transferTx.balance?.amount} BNB`)
+        console.log(`Account ${addressFlag} has ${getAccBalTx.balance?.amount} BNB`)
     }
 
 
@@ -204,31 +135,9 @@ class AccountService {
         } catch(ex) {
             throw new Error("Cannot initialize transferring to payment account")
         }
-        let simulateInfo
-        try {
-            simulateInfo = await transferTx.simulate({
-                denom: 'BNB',
-            });
-        } catch(ex) {
-            throw new Error("Unable to obtain gas fees")
-        }
 
-        let transactionHash
-        try {
-            const broadcastRes = await transferTx.broadcast({
-                denom: 'BNB',
-                gasLimit: Number(simulateInfo.gasLimit),
-                gasPrice: simulateInfo.gasPrice,
-                payer: config.publicKey,
-                granter: '',
-                privateKey: config.privateKey,
-            });
+        const response = await executeTransaction(transferTx);
 
-            transactionHash = broadcastRes.transactionHash
-        } catch(ex) {
-            throw new Error("Unable to broadcast transaction")
-        }
-
-        console.log(`Successfully transferred ${amountFlag} BNB to ${toAddressFlag}. Transaction ${transactionHash}`)
+        console.log(`Successfully transferred ${amountFlag} BNB to ${toAddressFlag}. Transaction ${response.transactionHash}`)
     }
 }
