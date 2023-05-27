@@ -1,4 +1,5 @@
 const { Client } = require("@bnb-chain/greenfield-chain-sdk");
+const dotenv = require("dotenv").config()
 const fs = require("fs");
 
 const client = Client.create(

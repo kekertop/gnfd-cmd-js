@@ -11,13 +11,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@bnb-chain/greenfield-chain-sdk": "^0.2.0",
     "@bnb-chain/greenfiled-file-handle": "^0.2.0",
     "commander": "^10.0.1",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@bnb-chain/greenfield-chain-sdk": "^0.2.0",
     "@types/jest": "^29.5.1",
+    "dotenv": "^16.0.3",
     "jest": "^29.5.0",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
