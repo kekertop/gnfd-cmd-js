@@ -14,8 +14,18 @@ export class ConfigService {
   private readonly configLocation: string;
   private config: Config;
 
-  constructor(configLocation: string) {
+  private static instance: ConfigService;
+
+  private constructor(configLocation: string) {
     this.configLocation = configLocation;
+  }
+
+  public static getInstance(configLocation?: string): ConfigService {
+    if (!this.instance) {
+      this.instance = new ConfigService(configLocation);
+    }
+
+    return this.instance;
   }
 
   public async getConfig(): Promise<Config> {
