@@ -1,3 +1,5 @@
+import * as url from "url";
+
 function getPassword(
     config: string,
     passwordFileFlag?: string,
@@ -5,10 +7,14 @@ function getPassword(
 
 }
 
-function getBucketNameByUrl(
+export function getBucketNameByUrl (
     urlInfo: string,
-) {
-
+) : string {
+    if (urlInfo.includes("gnfd://")) {
+        urlInfo = urlInfo.slice("gnfd://".length);
+    }
+    const splits = urlInfo.split("/", 1);
+    return splits[0];
 }
 
 function getGroupNameByUrl(
