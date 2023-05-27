@@ -1,5 +1,5 @@
 import "./modules/bucket";
-import {CommandGroupHolder} from "./cli-decorators/commandGroup";
+import { CommandGroupHolder } from "./cli-decorators/commandGroup";
 import commander from "commander";
 import {ConfigService} from "./utils/config";
 
