@@ -1,119 +1,208 @@
 // createBucket send the create bucket request to storage provider
 import {getBucketNameByUrl} from "./utils";
-import {Client, Long} from "@bnb-chain/greenfield-chain-sdk";
+import {BucketProps, Client, IObjectResultType, Long} from "@bnb-chain/greenfield-chain-sdk";
+import {newClient} from "./client";
 import {VisibilityType} from "@bnb-chain/greenfield-cosmos-types/greenfield/storage/common";
+import {StorageProvider} from '@bnb-chain/greenfield-cosmos-types/greenfield/sp/types';
+import {ConfigService} from "./config";
 
-const client = Client.create(
-    "https://gnfd-testnet-fullnode-tendermint-us.bnbchain.org",
-    "5600"
-);
+class BucketService {
 
-const PUBLIC_KEY = "0x54c4F86eFfcecf4A06E70C262f1b762764ee7265"
-const PRIVATE_KEY = "0x9b9ef687e5f9d36f3f411c1a13af0993c01b75c729df2dcb5c75782f7e0e2045"
+  public async createBucket(
+      bucketUrl: string,//given in gnfd://bucket_name format
+      primarySPFlag?: string,
+      chargeQuotaFlag?: number,
+      visibilityFlag?: string
+  ) {
+    const client = await newClient();
+    const config = await ConfigService.getInstance().getConfig();
 
-export async function createBucket(
-    bucketUrl: string,//given in gnfd://bucket_name format
-    primarySPFlag?: string,
-    paymentFlag?: string,
-    chargeQuotaFlag?: number,
-    visibilityFlag?: any
-) {
-    const spInfo = await client.sp.getStorageProviders();
+    const sp = await this.getPrimaryStorageProvider(client, primarySPFlag);
+
     //creating a bucket transaction
-    const createBucketTx = await client.bucket.createBucket({
-        bucketName: getBucketNameByUrl(bucketUrl),
-        creator: PUBLIC_KEY,
-        visibility: visibilityFlag || "VISIBILITY_TYPE_PRIVATE",
-        chargedReadQuota: "0", // strangely any other flag leads to errors chargeQuotaFlag.toString() || "0"
+    const bucketName = getBucketNameByUrl(bucketUrl);
+
+    let createBucketTx;
+    try {
+      createBucketTx = await client.bucket.createBucket({
+        bucketName: bucketName,
+        creator: config.publicKey,
+        visibility: visibilityFlag as keyof typeof VisibilityType ?? "VISIBILITY_TYPE_PRIVATE",
+        chargedReadQuota: chargeQuotaFlag ? chargeQuotaFlag.toString() : '0',
         spInfo: {
-            endpoint: spInfo[0].endpoint,
-            primarySpAddress: primarySPFlag || spInfo[0].operatorAddress,
-            sealAddress: spInfo[0].sealAddress,
-            secondarySpAddresses: spInfo.slice(1).map((i) => i.operatorAddress),
+          endpoint: sp.endpoint,
+          primarySpAddress: sp.operatorAddress,
+          sealAddress: sp.sealAddress,
+          secondarySpAddresses: [sp.operatorAddress]
         },
-    })
-    //broadcasting
-    const simulateCreateBucket = await createBucketTx.simulate({
+      });
+    } catch (ex) {
+      throw new Error('Unable to create bucket');
+    }
+
+    let simulateCreateBucket;
+    try {
+      simulateCreateBucket = await createBucketTx.simulate({
         denom: 'BNB',
-    });
-    const broadcastRes = await createBucketTx.broadcast({
+      });
+    } catch (ex) {
+      throw new Error('Unable to obtain gas info');
+    }
+
+    let transactionHash;
+    try {
+      const tx = await createBucketTx.broadcast({
         denom: 'BNB',
         gasLimit: Number(simulateCreateBucket.gasLimit),
         gasPrice: simulateCreateBucket.gasPrice,
-        payer: paymentFlag || PUBLIC_KEY,
+        payer: config.publicKey,
         granter: "",
-        privateKey: PRIVATE_KEY,
-    });
-}
+        privateKey: config.privateKey,
+      });
 
-// updateBucket send the create bucket request to storage provider
-export async function updateBucket(
-    bucketUrl: string,
-    paymentFlag?: string,
-    chargeQuotaFlag?: any, //UInt64Value
-    visibilityFlag?: any,
-) {
-    //creating an update bucket transaction
-    const updateBucketTx = await client.bucket.updateBucketInfo({
-        operator: PUBLIC_KEY,
-        bucketName: getBucketNameByUrl(bucketUrl),
+      transactionHash = tx.transactionHash;
+    } catch (ex) {
+      throw new Error('Unable to broadcast transaction');
+    }
+
+    console.log(`Successfully created bucket "${bucketName}". Transaction: ${transactionHash}`);
+  }
+
+  public async updateBucket(
+      bucketUrl: string,
+      paymentFlag?: string,
+      chargeQuotaFlag?: number,
+      visibilityFlag?: any,
+  ) {
+    const client = await newClient();
+    const config = await ConfigService.getInstance().getConfig();
+
+    const bucketName = getBucketNameByUrl(bucketUrl);
+
+    let updateBucketTx;
+    try {
+      updateBucketTx = await client.bucket.updateBucketInfo({
+        operator: config.publicKey,
+        bucketName: bucketName,
         chargedReadQuota: {
-            value: new Long(chargeQuotaFlag || 0)
-        }, // strangely any other flag leads to errors chargeQuotaFlag.toString() || "0"
-        paymentAddress: paymentFlag || PUBLIC_KEY,
+          value: new Long(chargeQuotaFlag ?? 0)
+        },
+        paymentAddress: paymentFlag ?? '',
         visibility: visibilityFlag || "VISIBILITY_TYPE_PRIVATE",
-    })
-    //broadcasting
-    const simulateUpdateBucket = await updateBucketTx.simulate({
+      });
+    } catch (ex) {
+      throw new Error('Unable to update bucket')
+    }
+
+    let simulateUpdateBucket;
+    try {
+      simulateUpdateBucket = await updateBucketTx.simulate({
         denom: 'BNB',
-    });
-    const broadcastRes = await updateBucketTx.broadcast({
+      });
+    } catch (ex) {
+      throw new Error('Unable to obtain gas info.')
+    }
+
+    let transactionHash;
+    try {
+      const tx = await updateBucketTx.broadcast({
         denom: 'BNB',
         gasLimit: Number(simulateUpdateBucket.gasLimit),
         gasPrice: simulateUpdateBucket.gasPrice,
-        payer: paymentFlag || PUBLIC_KEY,
+        payer: paymentFlag,
         granter: "",
-        privateKey: PRIVATE_KEY,
-    });
-}
+        privateKey: config.privateKey,
+      });
 
-// listBuckets list the buckets of the specific owner
-export async function listBuckets() {
-    const spInfo = await client.sp.getStorageProviders();
-    const listBucketTx = await client.bucket.getUserBuckets({
-        address: PUBLIC_KEY,
-        endpoint: spInfo[0].endpoint,
-    })
-    console.log(listBucketTx)
-}
+      transactionHash = tx.transactionHash;
+    } catch (ex) {
+      throw new Error('Unable to broadcast transaction');
+    }
 
-export async function deleteBucket(
-    bucketUrl: string
-) {
-    const deleteTx = await client.bucket.deleteBucket({
-        operator: PUBLIC_KEY,
-        bucketName: getBucketNameByUrl(bucketUrl),
+    console.log(`Successfully updated bucket "${bucketName}". Transaction: ${transactionHash}`);
+  }
+
+  public async listBuckets() {
+    const client = await newClient();
+    const config = await ConfigService.getInstance().getConfig();
+
+    const spInfo = await this.getPrimaryStorageProvider(client);
+
+    let listBucketTx: IObjectResultType<BucketProps[]>;
+
+    try {
+      listBucketTx = await client.bucket.getUserBuckets({
+        address: config.publicKey,
+        endpoint: spInfo.endpoint,
+      });
+    } catch (ex) {
+      throw new Error('Unable to retrieve buckets.');
+    }
+
+    if (!listBucketTx.body || listBucketTx.body.length == 0) {
+      console.log('Empty')
+    }
+
+    listBucketTx.body.forEach(bucket => {
+      console.log(`Bucket name: ${bucket.bucket_info.bucket_name}; Bucket id: ${bucket.bucket_info.id}`);
     });
-    const simulateDeleteBucket = await deleteTx.simulate({
+  }
+
+  public async deleteBucket(
+      bucketUrl: string
+  ) {
+    const client = await newClient();
+    const config = await ConfigService.getInstance().getConfig();
+
+    const bucketName = getBucketNameByUrl(bucketUrl);
+
+    let deleteTx
+    try {
+      deleteTx = await client.bucket.deleteBucket({
+        operator: config.publicKey,
+        bucketName: bucketName,
+      });
+    } catch (ex) {
+      throw new Error('Unable to delete bucket');
+    }
+
+    let simulateDeleteBucket;
+    try {
+      simulateDeleteBucket = await deleteTx.simulate({
         denom: "BNB",
-    });
-    const broadcastData = await deleteTx.broadcast({
+      });
+    } catch (ex) {
+      throw new Error('Unable to obtain gas info');
+    }
+
+    let deleteBucketTx;
+    try {
+      deleteBucketTx = await deleteTx.broadcast({
         denom: "BNB",
         gasLimit: Number(simulateDeleteBucket.gasLimit),
         gasPrice: simulateDeleteBucket.gasPrice,
-        payer: PUBLIC_KEY,
+        payer: config.publicKey,
         granter: "",
-        privateKey: PRIVATE_KEY,
-    });
-}
+        privateKey: config.privateKey,
+      });
+    } catch (ex) {
+      throw new Error('Unable to broadcast transaction');
+    }
 
-export function putBucketPolicy(
-    bucketUrl: string,
-    groupIDFlag?: number,
-    granteeFlag?: string,
-    actionsFlag?: string,
-    effectFlag?: any,
-    expireTimeFlag?: number,
-) {
+    console.log(`Successfully updated bucket "${bucketName}". Transaction: ${deleteBucketTx.transactionHash}`);
+  }
 
+  private async getPrimaryStorageProvider(client: Client, address?: string): Promise<StorageProvider> {
+    try {
+      const spInfo = await client.sp.getStorageProviders();
+
+      if (address) {
+        return spInfo.find(sp => sp.operatorAddress == address) ?? spInfo[0];
+      }
+
+      return spInfo[0];
+    } catch (ex) {
+      throw new Error('Unable to obtain primary SP address!')
+    }
+  }
 }
