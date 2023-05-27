@@ -2,7 +2,8 @@ import {CommandHolder} from "./command";
 import commander from "commander";
 
 export interface CommandGroup {
-  prefix: string
+  prefix: string,
+  description?: string
 }
 
 export class CommandGroupHolder {
@@ -32,6 +33,10 @@ export function commandGroup(value: CommandGroup) {
 
     if (commands.length > 0) {
       const command = new commander.Command(value.prefix);
+
+      if (value.description) {
+        command.description(value.description);
+      }
 
       for (const subCommand of commands) {
         command.addCommand(subCommand);

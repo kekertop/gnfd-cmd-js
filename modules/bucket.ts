@@ -5,13 +5,36 @@ import {newClient} from "./client";
 import {VisibilityType} from "@bnb-chain/greenfield-cosmos-types/greenfield/storage/common";
 import {StorageProvider} from '@bnb-chain/greenfield-cosmos-types/greenfield/sp/types';
 import {ConfigService} from "./config";
+import {commandGroup} from "../cli-decorators/commandGroup";
+import {command} from "../cli-decorators/command";
+import {argument} from "../cli-decorators/argument";
+import {option} from "../cli-decorators/option";
 
+@commandGroup({prefix: 'bucket', description: 'Bucket operations'})
 class BucketService {
 
+  @command({name: 'create', description: 'Create bucket'})
   public async createBucket(
-      bucketUrl: string,//given in gnfd://bucket_name format
-      primarySPFlag?: string,
-      chargeQuotaFlag?: number,
+      @argument({
+        description: 'Bucket URL',
+        alias: 'bucket-url'
+      }) bucketUrl: string,
+      @option({
+        short: 's',
+        long: 'primary-storage-provider',
+        description: 'Primary storage provider URL'
+      }) primarySPFlag?: string,
+      @option({
+        short: 'q',
+        long: 'charge-quota',
+        description: 'Charge quota'
+      }) chargeQuotaFlag?: number,
+      @option({
+        short: 'v',
+        long: 'visibility',
+        description: 'Transaction visibility',
+        choices: ['VISIBILITY_TYPE_UNSPECIFIED', 'VISIBILITY_TYPE_PUBLIC_READ', 'VISIBILITY_TYPE_PRIVATE', 'VISIBILITY_TYPE_INHERIT']
+      })
       visibilityFlag?: string
   ) {
     const client = await newClient();

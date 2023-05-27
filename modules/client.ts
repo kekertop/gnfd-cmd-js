@@ -1,5 +1,5 @@
 import {Client} from "@bnb-chain/greenfield-chain-sdk";
-import {ConfigService} from "../utils/config";
+import {ConfigService} from "./config";
 
 export async function newClient(rpcAddr?: string, chainId?: string): Promise<Client> {
   const config = await ConfigService.getInstance().getConfig();

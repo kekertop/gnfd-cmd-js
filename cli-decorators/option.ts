@@ -15,6 +15,7 @@ export interface CLIOption {
   valueAlias?: string,
   description?: string,
   defaultValue?: string,
+  choices?: string[]
 }
 
 export interface CLIOptionDescriptor {
@@ -54,6 +55,14 @@ function buildOption(option: CLIOption) {
     commanderOption.argParser(parser(option.type));
   }
 
+  if (option.choices) {
+    if (option.type && (option.type == InputType.NUMBER || option.type == InputType.BOOLEAN)) {
+      throw new Error('Unable to provide choices with non-string input type');
+    }
+
+    commanderOption.choices(option.choices);
+  }
+
   return commanderOption;
 }
 
@@ -62,6 +71,8 @@ function buildFlag(option: CLIOption) {
 }
 
 function buildTag(option: CLIOption) {
+  const valueMandatory = option.valueMandatory === undefined || option.valueMandatory;
+
   if (option.type === InputType.BOOLEAN) {
     if (option.valueMandatory) {
       throw new Error("Can't set value mandatory option on boolean options.");
@@ -72,5 +83,5 @@ function buildTag(option: CLIOption) {
 
   const valueAlias = option.valueAlias ?? 'value';
 
-  return option.valueMandatory ? `<${valueAlias}>` : `[${valueAlias}]`;
+  return valueMandatory ? `<${valueAlias}>` : `[${valueAlias}]`;
 }

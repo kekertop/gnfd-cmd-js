@@ -1,9 +1,9 @@
 import "./modules/bucket";
 import { CommandGroupHolder } from "./cli-decorators/commandGroup";
 import commander from "commander";
-import {ConfigService} from "./utils/config";
+import {ConfigService} from "./modules/config";
 
-ConfigService.getInstance('~/.bnb/config.json');
+ConfigService.getInstance('/Users/zhan/.bnb/config.json');
 
 const program = new commander.Command();
 
