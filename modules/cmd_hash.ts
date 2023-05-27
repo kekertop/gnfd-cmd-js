@@ -1,8 +1,9 @@
-interface ComputeHashRootOptions {
-    filePath: string;
+function computeHashRoot(
+    filePath: string,
+) {
+
 }
 
-
-function computeHashRoot(params: ComputeHashRootOptions) {
-
+module.exports = {
+    computeHashRoot: computeHashRoot
 }

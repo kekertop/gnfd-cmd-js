@@ -1,57 +1,50 @@
-interface depositInterface {
-    cliContext: any;
-}
-
-interface depositOptions {
-    toAddressFlag?: string;
-    amountFlag?: string;
-}
-
-interface WithdrawOptions {
-    fromAddressFlag?: string;
-    amountFlag?: string;
-}
-
-interface ListPaymentAccountsOptions {
-    ownerAddr: string;
-    ownerAddressFlag?: string;
-}
-
-interface GetAccountBalanceOptions {
-    addressFlag?: string;
-}
-
-interface TransferOptions {
-    toAddressFlag?: string;
-    amountFlag?: string;
-}
-
-
-
 function createPaymentAccount() {
 
 }
 
 
-function deposit(params: depositOptions) {
+function deposit(
+    toAddressFlag?: string,
+    amountFlag?: string,
+) {
 
 }
 
 
-function withdraw(params: WithdrawOptions) {
+function withdraw(
+    fromAddressFlag?: string,
+    amountFlag?: string,
+) {
 
 }
 
 
-function listPaymentAccounts(params: ListPaymentAccountsOptions) {
+function listPaymentAccounts(
+    ownerAddr: string,
+    ownerAddressFlag?: string,
+) {
 
 }
 
-function getAccountBalance(params: GetAccountBalanceOptions) {
+function getAccountBalance(
+    addressFlag?: string,
+) {
 
 }
 
 
-function transfer(params: TransferOptions) {
+function transfer(
+    toAddressFlag?: string,
+    amountFlag?: string,
+) {
 
+}
+
+module.exports = {
+    createPaymentAccount: createPaymentAccount,
+    deposit: deposit,
+    withdraw: withdraw,
+    listPaymentAccounts: listPaymentAccounts,
+    getAccountBalance: getAccountBalance,
+    transfer: transfer,
 }

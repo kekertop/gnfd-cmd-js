@@ -1,17 +1,17 @@
-interface BuyQuotaOptions {
-    bucketUrl: string;
-    chargeQuotaFlag?: number;
-}
-
-interface QuotaInfoOptions {
-    bucketUrl: string;
-}
-
-
-function buyQuotaForBucket(params: BuyQuotaOptions) {
+function buyQuotaForBucket(
+    bucketUrl: string,
+    chargeQuotaFlag?: number,
+) {
 
 }
 
-function getQuotaInfo(params: QuotaInfoOptions) {
+function getQuotaInfo(
+    bucketUrl: string,
+) {
 
+}
+
+module.exports = {
+    buyQuotaForBucket: buyQuotaForBucket,
+    getQuotaInfo: getQuotaInfo,
 }

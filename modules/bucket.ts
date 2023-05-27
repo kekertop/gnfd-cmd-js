@@ -1,35 +1,21 @@
-interface CreateBucketOptions {
-    bucketUrl: string;
-    primarySPFlag?: string;
-    paymentFlag?: string;
-    chargeQuotaFlag?: number;
-    visibilityFlag?: any;
-}
-
-interface UpdateBucketOptions {
-    bucketUrl: string;
-    paymentFlag?: string;
-    chargeQuotaFlag?: number;
-    visibilityFlag?: any;
-}
-
-interface PutBucketPolicyOptions {
-    bucketUrl: string;
-    groupIDFlag?: number;
-    granteeFlag?: string;
-    actionsFlag?: string;
-    effectFlag?: any;
-    expireTimeFlag?: number;
-}
-
-
 // createBucket send the create bucket request to storage provider
-function createBucket(params: CreateBucketOptions) {
+function createBucket(
+    bucketUrl: string,
+    primarySPFlag?: string,
+    paymentFlag?: string,
+    chargeQuotaFlag?: number,
+    visibilityFlag?: any
+){
 
 }
 
 // updateBucket send the create bucket request to storage provider
-function updateBucket(params: UpdateBucketOptions) {
+function updateBucket(
+    bucketUrl: string,
+    paymentFlag?: string,
+    chargeQuotaFlag?: number,
+    visibilityFlag?: any,
+) {
 
 }
 
@@ -38,7 +24,14 @@ function listBuckets() {
 
 }
 
-function putBucketPolicy(params: PutBucketPolicyOptions) {
+function putBucketPolicy(
+    bucketUrl: string,
+    groupIDFlag?: number,
+    granteeFlag?: string,
+    actionsFlag?: string,
+    effectFlag?: any,
+    expireTimeFlag?: number,
+) {
 
 }
 

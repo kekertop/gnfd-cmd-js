@@ -1,37 +1,30 @@
-interface CreateGroupOptions {
-    groupUrl: string;
-    initMemberFlag?: string;
-}
-
-interface UpdateGroupOptions {
+function createGroup(
     groupUrl: string,
-    addMemberFlag?: string;
-    removeMemberFlag?: string;
-    groupOwnerFlag?: string;
-}
-
-interface UpdateGroupMemberOptions {
-    addMemberFlag?: string;
-    removeMemberFlag?: string;
-}
-
-interface GroupOwnerOptions {
-    client: any; //what is that??!?!?
-    groupOwnerFlag?: string;
-}
-
-function createGroup(params: CreateGroupOptions) {
+    initMemberFlag?: string,
+) {
 
 }
 
 //seems like it is not fully finished
-function updateGroup(params: UpdateGroupOptions) {
+
+function updateGroupMember(
+    groupUrl: string,
+    addMemberFlag?: string,
+    removeMemberFlag?: string,
+    groupOwnerFlag?: string,
+) {
 
 }
-function updateGroupMember(params: UpdateGroupMemberOptions) {
+
+function getGroupOwner(
+    client: any, //what is that??!?!?   (ctx *cli.Context, client client.Client)
+    groupOwnerFlag?: string,
+) {
 
 }
 
-function getGroupOwner(params: GroupOwnerOptions) {
-
+module.exports = {
+    createGroup: createGroup,
+    updateGroupMember: updateGroupMember,
+    getGroupOwner: getGroupOwner,
 }

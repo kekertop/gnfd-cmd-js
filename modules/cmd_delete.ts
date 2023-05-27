@@ -1,24 +1,23 @@
-interface DeleteBucketOptions {
-    bucketUrl: string;
-}
-
-interface DeleteObjectOptions {
-    bucketUrl: string;
-}
-
-interface DeleteGroupOptions {
-    groupUrl: string;
-}
-
-
-function deleteBucket(params: DeleteBucketOptions) {
+function deleteBucket(
+    bucketUrl: string
+) {
 
 }
 
-function deleteObject(params: DeleteObjectOptions) {
+function deleteObject(
+    bucketUrl: string,
+) {
 
 }
 
-function deleteGroup(params: DeleteGroupOptions) {
+function deleteGroup(
+    groupUrl: string,
+) {
 
+}
+
+module.exports = {
+    deleteBucket: deleteBucket,
+    deleteObject: deleteObject,
+    deleteGroup: deleteGroup,
 }

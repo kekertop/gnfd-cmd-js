@@ -1,35 +1,33 @@
-interface HeadObjectOptions {
-    objectUrl: string;
-}
-
-interface HeadBucketOptions {
-    bucketUrl: string;
-}
-
-interface HeadGroupOptions {
-    groupUrl: string;
-    groupOwnerFlag?: string;
-}
-
-interface HeadGroupMemberOptions {
-    groupUrl: string;
-    groupOwnerFlag?: string;
-    headMemberFlag?: string;
-}
-
-
-function headObject(params: HeadObjectOptions) {
+function headObject(
+    objectUrl: string,
+) {
 
 }
 
-function headBucket(params: HeadBucketOptions) {
+function headBucket(
+    bucketUrl: string,
+) {
 
 }
 
-function headGroup(params: HeadGroupOptions) {
+function headGroup(
+    groupUrl: string,
+    groupOwnerFlag?: string,
+) {
 
 }
 
-function headGroupMember(params: HeadGroupMemberOptions) {
+function headGroupMember(
+    groupUrl: string,
+    groupOwnerFlag?: string,
+    headMemberFlag?: string,
+    ) {
 
+}
+
+module.exports = {
+    headObject: headObject,
+    headBucket: headBucket,
+    headGroup: headGroup,
+    headGroupMember: headGroupMember,
 }

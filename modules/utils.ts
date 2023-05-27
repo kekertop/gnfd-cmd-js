@@ -1,25 +1,32 @@
-interface ParseActionsOptions {
-    actionsFlag?: string;
-    isObjectPolicy?: boolean;
-}
-
-interface GetPasswordOptions {
-    passwordFileFlag?: string;
-    config: any;
-}
-
-interface GetBucketNameByUrlOptions {
-    urlInfo: string;
-}
-
-function getPassword(params: GetPasswordOptions) {
+function getPassword(
+    config: string,
+    passwordFileFlag?: string,
+) {
 
 }
 
-function getBucketNameByUrl(params: GetBucketNameByUrlOptions) {
+function getBucketNameByUrl(
+    urlInfo: string,
+) {
 
 }
 
-function parseActions(params: ParseActionsOptions) {
+function getGroupNameByUrl(
+    urlInfo: string,
+) {
 
+}
+
+function parseActions(
+    actionsFlag?: string,
+    isObjectPolicy?: boolean,
+) {
+
+}
+
+module.exports = {
+    getPassword: getPassword,
+    getBucketNameByUrl: getBucketNameByUrl,
+    getGroupNameByUrl: getGroupNameByUrl,
+    parseActions: parseActions,
 }

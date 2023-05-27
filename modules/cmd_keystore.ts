@@ -1,9 +1,10 @@
-interface GenerateKeyOptions {
-    keyFilePath?: string;
-    privKeyFileFlag?: string;
+function generateKey(
+    keyFilePath?: string,
+    privKeyFileFlag?: string,
+) {
+
 }
 
-
-function generateKey(params: GenerateKeyOptions) {
-
+module.exports = {
+    generateKey: generateKey,
 }

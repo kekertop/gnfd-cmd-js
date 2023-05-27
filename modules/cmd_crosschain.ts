@@ -1,17 +1,18 @@
-interface TransferOutOptions {
-    toAddressFlag?: string;
-    amountFlag?: string;
-}
-
-interface MirrorResourceOptions {
-    resourceFlag?: string;
-    IdFlag?: string;
-}
-
-function transferOut(params: TransferOutOptions) {
+function transferOut(
+    toAddressFlag?: string,
+    amountFlag?: string,
+) {
 
 }
 
-function mirror(params: MirrorResourceOptions) {
+function mirror(
+    resourceFlag?: string,
+    IdFlag?: string,
+) {
 
+}
+
+module.exports = {
+    transferOut: transferOut,
+    mirror: mirror
 }

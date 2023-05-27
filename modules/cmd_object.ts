@@ -1,93 +1,72 @@
-interface PutObjectOptions {
-    filePath: string; //ArgsUsage: "[filePath] OBJECT-URL"
-    secondarySPFlag?: string;
-    contentTypeFlag?: string;
-    visibilityFlag?: any;
-    folderFlag?: string;
-}
-
-interface CreateFolderOptions {
-    objectUrl: string;
-    visibilityFlag?: any;
-    objectPrefix?: string;
-}
-
-interface GetObjOptions {
-    filePath: string; //ArgsUsage: "[filePath] OBJECT-URL"
-    startOffsetFlag: number;
-    endOffsetFlag: number;
-}
-
-interface PutObjectPolicyOptions {
-    objectUrl: string; //ArgsUsage: "[filePath] OBJECT-URL"
-    groupIDFlag?: number;
-    granteeFlag?: string;
-    actionsFlag?: any;
-    effectFlag?: string;
-    expireTimeFlag?: number;
-}
-
-interface UpdateObjectOptions {
-    objectUrl: string;
-    visibilityFlag?: any;
-}
-
-interface CancelCreateObjectOptions {
-    objectUrl: string;
-}
-
-interface ListObjectsOptions {
-    bucketUrl: string;
-}
-
-interface UploadInfoOptions {
-    objectUrl: string;
-}
-
-interface PathExistsOptions {
-    path: string;
-}
-
-interface GetObjAndBucketNamesOptions {
-    urlInfo: string;
-}
-
-function putObject(params: PutObjectOptions) {
+function putObject(
+    filePath: string, //ArgsUsage: "[filePath] OBJECT-URL"
+    secondarySPFlag?: string,
+    contentTypeFlag?: string,
+    visibilityFlag?: any,
+    folderFlag?: string,
+) {
 
 }
 
-function putObjectPolicy(params: PutObjectPolicyOptions) {
+function putObjectPolicy(
+    objectUrl: string, //ArgsUsage: "[filePath] OBJECT-URL"
+    groupIDFlag?: number,
+    granteeFlag?: string,
+    actionsFlag?: any,
+    effectFlag?: string,
+    expireTimeFlag?: number,
+) {
 
 }
 
-function getObject(params: GetObjOptions) {
+function getObject(
+    filePath: string, //ArgsUsage: "[filePath] OBJECT-URL"
+    startOffsetFlag?: number,
+    endOffsetFlag?: number,
+) {
 
 }
 
-function cancelCreateObject(params: CancelCreateObjectOptions) {
+function cancelCreateObject(
+    objectUrl: string,
+) {
 
 }
 
-function listObjects(params: ListObjectsOptions) {
+function listObjects(
+    bucketUrl: string,
+) {
 
 }
 
-function createFolder(params: CreateFolderOptions) {
+function createFolder(
+    objectUrl: string,
+    visibilityFlag?: any,
+    objectPrefix?: string,
+) {
 
 }
 
-function updateObject(params: UpdateObjectOptions) {
+function updateObject(
+    objectUrl: string,
+    visibilityFlag?: any,
+) {
 
 }
 
-function getUploadInfo(params: UploadInfoOptions) {
+function getUploadInfo(
+    objectUrl: string,
+) {
 
 }
 
-function pathExists(params: PathExistsOptions) {
-
-}
-
-function getObjAndBucketNames(params: GetObjAndBucketNamesOptions) {
-
+module.exports = {
+    putObject: putObject,
+    putObjectPolicy: putObjectPolicy,
+    getObject: getObject,
+    cancelCreateObject: cancelCreateObject,
+    listObjects: listObjects,
+    createFolder: createFolder,
+    updateObject: updateObject,
+    getUploadInfo: getUploadInfo,
 }
