@@ -1,83 +1,56 @@
-import { ConfigService } from "../utils/config";
+import { ConfigService } from "./config";
 import { newClient } from "./client";
-interface IDeleteObjectProps {
-  bucketName: string;
-  objectName: string;
-  operator: string;
-}
-interface IDeleteGroupProps {
-  groupName: string;
-  operator: string;
-}
-async function deleteObject({
-  bucketName,
-  objectName,
-  operator,
-}: IDeleteObjectProps) {
-  const client = await newClient();
-  const config = await ConfigService.getInstance().getConfig();
+import { executeTransaction } from "../utils/transactionUtils";
 
-  const tx = await client.object.deleteObject({
-    bucketName,
-    objectName,
-    operator,
-  });
-  let simulateDeleteObject;
-  try {
-    simulateDeleteObject = await tx.simulate({
-      denom: "BNB",
-    });
-  } catch (ex) {
-    throw new Error("Unable to obtain gas info");
+
+
+class DeleteService {
+  public async deleteObject(
+      bucketName: string,
+      objectName: string,
+      operator: string,
+  ) {
+    const client = await newClient();
+    const config = await ConfigService.getInstance().getConfig();
+
+    let deleteObjTx
+    try {
+      deleteObjTx = await client.object.deleteObject({
+        bucketName,
+        objectName,
+        operator,
+      });
+    } catch (ex) {
+      throw new Error("Unable to initialize deleting object")
+    }
+
+    const response = await executeTransaction(deleteObjTx);
+    console.log(
+        `Successfully deleted payment account "${objectName}" at bucket ${bucketName}. Transaction: ${response.transactionHash}`
+    );
   }
 
-  let transactionHash;
-  try {
-    const broadcastData = await tx.broadcast({
-      denom: "BNB",
-      gasLimit: Number(simulateDeleteObject.gasLimit),
-      gasPrice: simulateDeleteObject.gasPrice,
-      payer: config.publicKey,
-      granter: "",
-      privateKey: config.privateKey,
-    });
+  public async deleteGroup(
+      groupName: string,
+      operator: string,
+  ) {
+    const client = await newClient();
+    const config = await ConfigService.getInstance().getConfig();
 
-    transactionHash = broadcastData.transactionHash;
-  } catch (ex) {
-    throw new Error("Unable to broadcast transaction");
-  }
-}
 
-async function deleteGroup({ groupName, operator }: IDeleteGroupProps) {
-  const client = await newClient();
-  const config = await ConfigService.getInstance().getConfig();
+    let deleteGroupTx
+    try {
+      deleteGroupTx = await client.group.deleteGroup({
+        groupName,
+        operator,
+      });
+    } catch(ex) {
+      throw new Error("Unable to initialize group deletion")
+    }
 
-  const tx = await client.group.deleteGroup({
-    groupName,
-    operator,
-  });
-  let simulateDeleteGroup;
-  try {
-    simulateDeleteGroup = await tx.simulate({
-      denom: "BNB",
-    });
-  } catch (ex) {
-    throw new Error("Unable to obtain gas info");
-  }
-
-  let transactionHash;
-  try {
-    const broadcastData = await tx.broadcast({
-      denom: "BNB",
-      gasLimit: Number(simulateDeleteGroup.gasLimit),
-      gasPrice: simulateDeleteGroup.gasPrice,
-      payer: config.publicKey,
-      granter: "",
-      privateKey: config.privateKey,
-    });
-
-    transactionHash = broadcastData.transactionHash;
-  } catch (ex) {
-    throw new Error("Unable to broadcast transaction");
+    const response = await executeTransaction(deleteGroupTx);
+    console.log(
+        `Successfully deleted group "${deleteGroupTx}". Transaction: ${response.transactionHash}`
+    );
   }
 }
