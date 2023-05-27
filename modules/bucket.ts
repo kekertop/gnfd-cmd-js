@@ -78,8 +78,33 @@ export async function updateBucket(
 }
 
 // listBuckets list the buckets of the specific owner
-export function listBuckets() {
+export async function listBuckets() {
+    const spInfo = await client.sp.getStorageProviders();
+    const listBucketTx = await client.bucket.getUserBuckets({
+        address: PUBLIC_KEY,
+        endpoint: spInfo[0].endpoint,
+    })
+    console.log(listBucketTx)
+}
 
+export async function deleteBucket(
+    bucketUrl: string
+) {
+    const deleteTx = await client.bucket.deleteBucket({
+        operator: PUBLIC_KEY,
+        bucketName: getBucketNameByUrl(bucketUrl),
+    });
+    const simulateDeleteBucket = await deleteTx.simulate({
+        denom: "BNB",
+    });
+    const broadcastData = await deleteTx.broadcast({
+        denom: "BNB",
+        gasLimit: Number(simulateDeleteBucket.gasLimit),
+        gasPrice: simulateDeleteBucket.gasPrice,
+        payer: PUBLIC_KEY,
+        granter: "",
+        privateKey: PRIVATE_KEY,
+    });
 }
 
 export function putBucketPolicy(
