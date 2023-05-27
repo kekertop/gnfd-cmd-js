@@ -119,3 +119,12 @@ export async function transfer(
         privateKey: PRIVATE_KEY,
     });
 }
+
+module.exports = {
+    createPaymentAccount,
+    deposit,
+    withdraw,
+    listPaymentAccounts,
+    getAccountBalance,
+    transfer
+}
