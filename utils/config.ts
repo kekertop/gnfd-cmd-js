@@ -1,6 +1,7 @@
-const {promises: fs} = require('fs');
-const path = require('path');
-const {createInterface} = require('readline/promises');
+import {createInterface} from "readline/promises";
+
+import {promises as fs} from "fs";
+import path from "path";
 
 export interface Config {
   rpcAddress: string,
