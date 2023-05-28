@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 import './modules/bucket';
 import './modules/account';
 import './modules/group';
