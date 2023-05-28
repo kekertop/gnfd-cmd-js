@@ -13,15 +13,9 @@ class GroupService {
   @command({name: "create", description: "create group"})
   public async createGroup(
       @argument({
-        description: "Creator account address",
-        alias: "creator",
-      }) creator: string,
-      @option({
-        short: "n",
-        long: "name",
-        description: "Name of the created group",
-        optionMandatory: true
-      }) groupName: string,
+        alias: "groupurl",
+        description: "Url of the group to be created",
+      }) groupUrl: string,
       @option({
         short: "m",
         long: "members",
@@ -31,12 +25,13 @@ class GroupService {
       }) members?: string[]
   ) {
     const client = await newClient();
+    const config = await ConfigService.getInstance().getConfig();
 
     let createGroupTx
     try {
       createGroupTx = await client.group.createGroup({
-        creator,
-        groupName,
+        creator: config.publicKey,
+        groupName: getGroupNameByUrl(groupUrl),
         members,
       });
     } catch (ex) {
@@ -44,7 +39,7 @@ class GroupService {
     }
     const response = await executeTransaction(createGroupTx);
     console.log(
-        `Successfully created group "${groupName}". Transaction: ${response.transactionHash}`
+        `Successfully created group "${getGroupNameByUrl(groupUrl)}". Transaction: ${response.transactionHash}`
     );
   }
 
@@ -106,7 +101,7 @@ class GroupService {
       @argument({
         description: "group name",
         alias: "group-name",
-      }) groupName: string,
+      }) groupUrl: string,
   ) {
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
@@ -114,7 +109,7 @@ class GroupService {
     let deleteGroupTx
     try {
       deleteGroupTx = await client.group.deleteGroup({
-        groupName,
+        groupName: getGroupNameByUrl(groupUrl),
         operator: config.publicKey
       });
     } catch (ex) {
