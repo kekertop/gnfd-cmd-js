@@ -1,4 +1,4 @@
-import {getGroupNameByUrl} from "./utils";
+import {getGroupNameByUrl} from "../utils/bnbUtils";
 import {newClient} from "./client";
 import {ConfigService} from "./config";
 import {executeTransaction} from "../utils/transactionUtils";

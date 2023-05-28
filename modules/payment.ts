@@ -1,5 +1,5 @@
 // createBucket send the create bucket request to storage provider
-import { getBucketNameByUrl } from "./utils";
+import { getBucketNameByUrl } from "../utils/bnbUtils";
 import { newClient } from "./client";
 import { ConfigService } from "./config";
 import { VisibilityType } from "@bnb-chain/greenfield-cosmos-types/greenfield/storage/common";

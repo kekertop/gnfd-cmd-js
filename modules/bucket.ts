@@ -1,4 +1,4 @@
-import {getBucketNameByUrl} from "./utils";
+import {getBucketNameByUrl} from "../utils/bnbUtils";
 import {BucketProps, IObjectResultType, Long,} from "@bnb-chain/greenfield-chain-sdk";
 import {newClient} from "./client";
 import {VisibilityType} from "@bnb-chain/greenfield-cosmos-types/greenfield/storage/common";

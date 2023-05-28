@@ -1,7 +1,7 @@
 import { executeTransaction } from "../utils/transactionUtils";
 import { newClient } from "./client";
 import { ConfigService } from "./config";
-import {getBucketNameByUrl, getGroupNameByUrl, parseBucketAndObject} from "./utils";
+import {getBucketNameByUrl, getGroupNameByUrl, parseBucketAndObject} from "../utils/bnbUtils";
 import {commandGroup} from "../cli-decorators/commandGroup";
 import {command} from "../cli-decorators/command";
 import {argument} from "../cli-decorators/argument";

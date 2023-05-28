@@ -3,7 +3,7 @@ import {VisibilityType} from "@bnb-chain/greenfield-cosmos-types/greenfield/stor
 import {ConfigService} from "./config";
 import {newClient} from "./client";
 import {executeTransaction, getPrimaryStorageProviderInfo} from "../utils/transactionUtils";
-import {getBucketNameByUrl, getObjAndBucketNames, parseBucketAndObject,} from "./utils";
+import {getBucketNameByUrl, getObjAndBucketNames, parseBucketAndObject,} from "../utils/bnbUtils";
 import {commandGroup} from "../cli-decorators/commandGroup";
 import {command} from "../cli-decorators/command";
 import {argument} from "../cli-decorators/argument";
