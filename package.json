@@ -1,6 +1,6 @@
 {
   "name": "@kekertop/greenfield-js-cmd",
-  "version": "1.0.5",
+  "version": "1.0.13",
   "description": "Greenfield JS cmd",
   "main": "dist/index.js",
   "scripts": {
@@ -14,12 +14,13 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
+  "files": ["dist/**"],
   "dependencies": {
     "@bnb-chain/greenfiled-file-handle": "^0.2.0",
+    "@bnb-chain/greenfield-chain-sdk": "^0.2.0",
     "commander": "^10.0.1"
   },
   "devDependencies": {
-    "@bnb-chain/greenfield-chain-sdk": "^0.2.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   },

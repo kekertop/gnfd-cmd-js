@@ -144,11 +144,18 @@ class BucketService {
       console.log("Empty");
     }
 
-    listBucketTx.body.forEach((bucket) => {
-      console.log(
-        `Bucket name: ${bucket.bucket_info.bucket_name}; Bucket id: ${bucket.bucket_info.id}`
-      );
-    });
+    if (listBucketTx.code != 200) {
+      throw new Error(`Error: ${listBucketTx.message}. Code: ${listBucketTx.code}`);
+    }
+    if (!listBucketTx.body || listBucketTx.body.length == 0) {
+      console.log("Empty");
+    } else {
+      listBucketTx.body.forEach((bucket) => {
+        console.log(
+            `Bucket name: ${bucket.bucket_info.bucket_name}; Bucket id: ${bucket.bucket_info.id}`
+        );
+      });
+    }
   }
 
   @command({ name: "delete", description: "Delete a bucket by url" })
