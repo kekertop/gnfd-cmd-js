@@ -15,10 +15,12 @@ class StorageProvService {
     } catch(ex) {
       throw new Error("Unable to get storage providers")
     }
+    console.log("SP List:")
     spInfo.forEach((i) => {
-      console.log(`Storage provider ${spInfo[i]}`)
       console.log(`----------------------
-                    ${JSON.stringify(i)}}
+                    Endpoint: ${JSON.stringify(i.endpoint)}
+                    Operator address: ${JSON.stringify(i.operatorAddress)}
+                    Status: ${JSON.stringify(i.status)}
                  ----------------------`);
     });
   }
@@ -43,7 +45,7 @@ class StorageProvService {
       throw new Error("Unable to get storage provider information")
     }
     console.log(
-        `Storage provider by endpoints ${endpoint} is characterized by ${spInfo}.`
+        `Storage provider by endpoint ${endpoint} is characterized by ${spInfo} and is responding with status ${spInfo.status}.`
     );
   }
 
@@ -67,7 +69,7 @@ class StorageProvService {
       throw new Error("Unable to read from storage provider")
     }
     console.log(
-        `Quota price is ${spTx.readPrice} and Store price is ${spTx.storePrice}`
+        `Quota price is ${spTx.readPrice} and Store price is ${spTx.storePrice} wei`
     );
   }
 }
