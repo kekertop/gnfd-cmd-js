@@ -14,7 +14,8 @@ export interface Command {
 
 export interface CommandDescriptor {
   command: commander.Command,
-  method: string
+  method: string,
+  buildAction: (instance: any) => ((...args: any[]) => void)
 }
 
 export class CommandHolder {
@@ -43,19 +44,22 @@ export function command(value: Command) {
     const argumentDescriptors: CLIArgumentDescriptor[] = (Reflect.getOwnMetadata(argumentMetadataKey, target, methodName) || []).sort(byIndex);
     const optionDescriptors: CLIOptionDescriptor[] = (Reflect.getOwnMetadata(optionMetadataKey, target, methodName) || []).sort(byIndex);
 
-    const command = buildCommand(value, argumentDescriptors, optionDescriptors)
-    .action(function (...args) {
-      const cliArguments: Array<string> = args.slice(0, argumentDescriptors.length);
-      const cliOptions: Object = arguments[argumentDescriptors.length];
-      const command: commander.Command = arguments[argumentDescriptors.length + 1];
+    const command = buildCommand(value, argumentDescriptors, optionDescriptors);
 
-      method.apply(command, buildArguments(params, cliArguments, argumentDescriptors, cliOptions, optionDescriptors));
-    });
+    const buildAction = (instance: any) => {
+      return function (...args: any[]) {
+        const cliArguments: Array<string> = args.slice(0, argumentDescriptors.length);
+        const cliOptions: Object = arguments[argumentDescriptors.length];
+
+        method.apply(instance, buildArguments(params, cliArguments, argumentDescriptors, cliOptions, optionDescriptors));
+      }
+    };
 
     CommandHolder.getInstance().commands.push({
       command: command,
-      method: methodName
-    })
+      method: methodName,
+      buildAction: buildAction
+    });
   }
 }
 

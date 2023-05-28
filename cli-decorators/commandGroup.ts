@@ -3,7 +3,8 @@ import commander from "commander";
 
 export interface CommandGroup {
   prefix: string,
-  description?: string
+  description?: string,
+  instanceProvider?: () => any
 }
 
 export class CommandGroupHolder {
@@ -28,8 +29,7 @@ export function commandGroup(value: CommandGroup) {
   return function (target: any) {
     const targetMethods = getMethods(target);
     const commands = (CommandHolder.getInstance().commands ?? [])
-    .filter(commandDescriptor => targetMethods.has(commandDescriptor.method))
-    .map(commandDescriptor => commandDescriptor.command);
+    .filter(commandDescriptor => targetMethods.has(commandDescriptor.method));
 
     if (commands.length > 0) {
       const command = new commander.Command(value.prefix);
@@ -38,13 +38,23 @@ export function commandGroup(value: CommandGroup) {
         command.description(value.description);
       }
 
-      for (const subCommand of commands) {
-        command.addCommand(subCommand);
+      for (const commandDescriptor of commands) {
+        const instance = getInstance(target, value.instanceProvider);
+
+        command.addCommand(commandDescriptor.command.action(commandDescriptor.buildAction(instance)));
       }
 
       CommandGroupHolder.getInstance().commands.push(command);
     }
   }
+}
+
+function getInstance(target: any, instanceProvider?: () => any): any {
+  if (instanceProvider) {
+    return instanceProvider();
+  }
+
+  return new target();
 }
 
 function getMethods(target: any): Set<string> {
