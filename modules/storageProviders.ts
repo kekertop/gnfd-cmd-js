@@ -1,26 +1,21 @@
-import { getBucketNameByUrl } from "./utils";
-import { newClient } from "./client";
-import { ConfigService } from "./config";
-import { VisibilityType } from "@bnb-chain/greenfield-cosmos-types/greenfield/storage/common";
-import {executeTransaction} from "../utils/transactionUtils";
+import {newClient} from "./client";
 import {commandGroup} from "../cli-decorators/commandGroup";
 import {command} from "../cli-decorators/command";
 import {argument} from "../cli-decorators/argument";
 
-@commandGroup({ prefix: "storage", description: "Storage operations" })
-class StorageProvService {
-  @command({ name: "list", description: "List existing storage providers" })
-  public async listSP() {
+@commandGroup({prefix: "storage-provider", description: "Storage providers operations"})
+class StorageProvidersService {
+  @command({name: "list", description: "List existing storage providers"})
+  public async listStorageProviders() {
     const client = await newClient();
-    const config = await ConfigService.getInstance().getConfig();
 
     let spInfo
     try {
       spInfo = await client.sp.getStorageProviders();
-    } catch(ex) {
+    } catch (ex) {
       throw new Error("Unable to get storage providers")
     }
-    console.log("SP List:")
+
     spInfo.forEach((i) => {
       console.log(`----------------------
                     Endpoint: ${JSON.stringify(i.endpoint)}
@@ -30,28 +25,27 @@ class StorageProvService {
     });
   }
 
-  @command({ name: "query", description: "Get information about storage providers" })
-  public async querySP(
+  @command({name: "get", description: "Get information about storage providers"})
+  public async queryStorageProvider(
       @argument({
         description: "Endpoint address",
         alias: "endpoint",
       })
-      endpoint: string // "<Storage Provider endpoint>",
+          endpoint: string // "<Storage Provider endpoint>",
   ) {
     const client = await newClient();
-    const config = await ConfigService.getInstance().getConfig();
 
     let spArr
     try {
       spArr = await client.sp.getStorageProviders();
-    } catch(ex) {
+    } catch (ex) {
       throw new Error("Unable to fetch storage providers")
     }
     const sp = spArr.find((i) => i.endpoint === endpoint);
     let spInfo
     try {
       spInfo = await client.sp.getStorageProviderInfo(sp.operatorAddress);
-    } catch(ex) {
+    } catch (ex) {
       throw new Error("Unable to get storage provider information")
     }
     console.log(
@@ -59,28 +53,27 @@ class StorageProvService {
     );
   }
 
-  @command({ name: "getprice", description: "Get quota and store price for storage provider endpoint" })
+  @command({name: "quota-price", description: "Get quota and store price for storage provider endpoint"})
   public async getQuotaPrice(
       @argument({
         description: "Endpoint address",
         alias: "endpoint",
       })
-      endpoint: string // "<Storage Provider endpoint>"
+          endpoint: string // "<Storage Provider endpoint>"
   ) {
     const client = await newClient();
-    const config = await ConfigService.getInstance().getConfig();
 
     let spArr
     try {
       spArr = await client.sp.getStorageProviders();
-    } catch(ex) {
+    } catch (ex) {
       throw new Error("Unable to fetch storage providers")
     }
     const sp = spArr.find((i) => i.endpoint === endpoint);
     let spTx
     try {
       spTx = await client.sp.getStoragePriceByTime(sp.operatorAddress);
-    } catch(ex) {
+    } catch (ex) {
       throw new Error("Unable to read from storage provider")
     }
     console.log(

@@ -1,218 +1,88 @@
-import { Client } from "@bnb-chain/greenfield-chain-sdk";
-import fs from "fs";
-import { VisibilityType } from "@bnb-chain/greenfield-cosmos-types/greenfield/storage/common";
-import { ConfigService } from "./config";
-import { newClient } from "./client";
-import { executeTransaction } from "../utils/transactionUtils";
+import {promises as fs} from "fs";
+import {VisibilityType} from "@bnb-chain/greenfield-cosmos-types/greenfield/storage/common";
+import {ConfigService} from "./config";
+import {newClient} from "./client";
+import {executeTransaction, getPrimaryStorageProviderInfo} from "../utils/transactionUtils";
+import {getBucketNameByUrl, getObjAndBucketNames, parseBucketAndObject,} from "./utils";
+import {commandGroup} from "../cli-decorators/commandGroup";
+import {command} from "../cli-decorators/command";
+import {argument} from "../cli-decorators/argument";
+import {option} from "../cli-decorators/option";
 import {
-  getBucketNameByUrl,
-  getObjAndBucketNames,
-  parseBucketAndObject,
-} from "./utils";
-import { commandGroup } from "../cli-decorators/commandGroup";
-import { command } from "../cli-decorators/command";
-import { argument } from "../cli-decorators/argument";
-import { option } from "../cli-decorators/option";
+  QueryHeadBucketResponse,
+  QueryHeadObjectResponse
+} from "@bnb-chain/greenfield-cosmos-types/greenfield/storage/query";
+import {StorageProvider} from "@bnb-chain/greenfield-cosmos-types/greenfield/sp/types";
+import {IObjectProps} from "@bnb-chain/greenfield-chain-sdk";
+import {IObjectResultType} from "@bnb-chain/greenfield-chain-sdk/dist/esm/types";
 
-@commandGroup({ prefix: "object", description: "Object operations" })
+@commandGroup({prefix: "object", description: "Object operations"})
 class ObjectService {
-  @command({ name: "put", description: "create an object on-chain" })
-  public async putObject(
-    @argument({
-      description: "Object filepath",
-      alias: "object-filepath",
-    })
-    filePath: string, //ArgsUsage: "[filePath] OBJECT-URL"
-    @option({
-      short: "s",
-      long: "secondary-sp-flag",
-      description: "Secondary storage flag",
-      optionMandatory: true,
-    })
-    secondarySPFlag?: string,
-    @option({
-      short: "c",
-      long: "content-type-flag",
-      description: "Content type flag",
-      optionMandatory: true,
-    })
-    contentTypeFlag?: string,
-    @option({
-      short: "v",
-      long: "visibility",
-      description: "Transaction visibility",
-      choices: [
-        "VISIBILITY_TYPE_UNSPECIFIED",
-        "VISIBILITY_TYPE_PUBLIC_READ",
-        "VISIBILITY_TYPE_PRIVATE",
-        "VISIBILITY_TYPE_INHERIT",
-      ],
-      optionMandatory: true,
-    })
-    visibilityFlag?: any,
-    @option({
-      short: "f",
-      long: "folder-flag",
-      description: "Folder where object is uploaded",
-      optionMandatory: true,
-    })
-    folderFlag?: string
-  ) {
-    //implementation
-    console.log(`Successfully put object`);
-  }
-
-  @command({
-    name: "putpol",
-    description: "put object policy to group/account",
-  })
-  public async putObjectPolicy(
-    @argument({
-      description: "Object Url",
-      alias: "objectUrl",
-    })
-    objectUrl: string, //ArgsUsage: "[filePath] OBJECT-URL"
-    @option({
-      short: "g",
-      long: "group-id-flag",
-      description: "group id of the group",
-      optionMandatory: true,
-    })
-    groupIDFlag?: number,
-    @option({
-      short: "r",
-      long: "grantee-flag",
-      description: "address hex string of the grantee",
-      optionMandatory: true,
-    })
-    granteeFlag?: string,
-    @option({
-      short: "a",
-      long: "action",
-      description: "Set the action of the policy",
-      choices: ["CREATE", "DELETE", "COPY", "GET", "EXECUTE", "LIST", "ALL"],
-      optionMandatory: true,
-    })
-    actionsFlag?: string,
-    @option({
-      short: "f",
-      long: "effect-flag",
-      description: "Effect of the new policy",
-      optionMandatory: true,
-    })
-    effectFlag?: string,
-    @option({
-      short: "e",
-      long: "expire-time",
-      description: "Expire time of the new policy",
-      choices: ["EFFECT_ALLOW", "EFFECT_DENY"],
-      optionMandatory: true,
-    })
-    expireTimeFlag?: number
-  ) {
-    console.log(`Successfully applied a new object policy to ${objectUrl}`);
-  }
-
-  @command({ name: "get", description: "Get an object" })
+  @command({name: "get", description: "Get an object"})
   public async getObject(
-    @argument({
-      description: "Object filepath",
-      alias: "object-filepath",
-    })
-    filePath: string, //ArgsUsage: "[filePath] OBJECT-URL"
-    @option({
-      short: "s",
-      long: "start-offset-flag",
-      description: "Primary storage provider URL",
-    })
-    startOffsetFlag?: number,
-    @option({
-      short: "e",
-      long: "end-offset-flag",
-      description: "Primary storage provider URL",
-    })
-    endOffsetFlag?: number
+      @argument({
+        description: "Object path",
+        alias: "path",
+      }) objectPath: string,
+      @argument({
+        description: "File path",
+        alias: "path"
+      }) filePath: string
   ) {
     const client = await newClient();
-    const config = await ConfigService.getInstance().getConfig();
 
-    const { bucketName, objectName } = parseBucketAndObject(filePath);
-    let headObject;
+    const {bucketName, objectName} = parseBucketAndObject(objectPath);
+    let headObject: QueryHeadObjectResponse;
+    let headBucket: QueryHeadBucketResponse;
+    let storageProvider: StorageProvider;
+
     try {
       headObject = await client.object.headObject(bucketName, objectName);
+      if (!headObject.objectInfo) {
+        throw new Error("Object was not found");
+      }
+
+      headBucket = await client.bucket.headBucket(bucketName);
+      storageProvider = await client.sp.getStorageProviderInfo(
+          headBucket.bucketInfo.primarySpAddress
+      );
     } catch (ex) {
-      throw new Error("Unable to get head object");
+      throw new Error("Unable to head object, bucket and storage provider");
     }
-    if (!headObject.objectInfo) {
-      throw new Error("Object was not found");
-    }
-    // If file exist, open it in append mode
+
+    let getTx;
     try {
-      fs.readFileSync(filePath, { flag: "append" });
-    } catch (e) {
-      throw new Error(e);
-    }
-    // flag has been set
-    try {
-      const getTx = await client.object.getObject({ bucketName, objectName });
+      getTx = await client.object.getObject({bucketName, objectName, endpoint: storageProvider.endpoint});
     } catch (ex) {
       throw new Error("Unable to fetch the object");
     }
-    console.log(
-      `Downloaded object ${objectName} successfully, the file path is ${filePath}`
-    );
+
+    await fs.writeFile(filePath, Buffer.from(await getTx.body.arrayBuffer()));
+
+    console.log(`Downloaded object ${objectName} successfully. File path: ${filePath}.`);
   }
 
-  @command({ name: "cancel", description: "Cancel an object creation" })
-  public async cancelCreateObject(
-    @argument({
-      description: "Object Url",
-      alias: "objectUrl",
-    })
-    objectUrl: string
-  ) {
-    const config = await ConfigService.getInstance().getConfig();
-    const { bucketName, objectName } = parseBucketAndObject(objectUrl);
-    try {
-      const client = await newClient();
-      const config = await ConfigService.getInstance().getConfig();
-
-      const tx = await client.object.cancelCreateObject({
-        bucketName,
-        objectName,
-        operator: config.publicKey,
-      });
-      const response = await executeTransaction(tx);
-      console.log(
-        `Successfully cancelled object creation". Transaction: ${response.transactionHash}`
-      );
-    } catch (ex) {
-      throw new Error("Unable to cancel object creation");
-    }
-  }
-
-  @command({ name: "list", description: "Lists existing objects" })
+  @command({name: "list", description: "Lists existing objects"})
   public async listObjects(
-    @argument({
-      description: "Bucket Url",
-      alias: "bucketUrl",
-    })
-    bucketUrl: string
+      @argument({
+        description: "Bucket URL",
+        alias: "bucketUrl",
+      }) bucketUrl: string
   ) {
     const client = await newClient();
-    const config = await ConfigService.getInstance().getConfig();
 
     const bucketName = getBucketNameByUrl(bucketUrl);
     let storageProvider;
     try {
       const knownBucket = await client.bucket.headBucket(bucketName);
       storageProvider = await client.sp.getStorageProviderInfo(
-        knownBucket.bucketInfo.primarySpAddress
+          knownBucket.bucketInfo.primarySpAddress
       );
     } catch (ex) {
-      throw new Error("Unable to retreive storage provider");
+      throw new Error("Unable to retrieve storage provider");
     }
-    let tx;
+
+    let tx: IObjectResultType<Array<IObjectProps>>;
     try {
       tx = await client.object.listObjects({
         bucketName,
@@ -221,42 +91,39 @@ class ObjectService {
     } catch (ex) {
       throw new Error("Unable to list objects");
     }
-    console.log("Objects:");
-    console.log(tx);
+
+    (tx.body ?? [] as IObjectProps[])
+    .forEach(obj => console.log(`Name: ${obj.object_info.object_name}. ID: ${obj.object_info.id}. Status: ${obj.object_info.object_status}.`));
   }
 
-  @command({ name: "createfolder", description: "creates a new folder" })
+  @command({name: "mkdir", description: "creates a new folder"})
   public async createFolder(
-    @argument({
-      description: "Object Url",
-      alias: "objectUrl",
-    })
-    objectUrl: string,
-    @option({
-      short: "v",
-      long: "visibility",
-      description: "Transaction visibility",
-      choices: [
-        "VISIBILITY_TYPE_UNSPECIFIED",
-        "VISIBILITY_TYPE_PUBLIC_READ",
-        "VISIBILITY_TYPE_PRIVATE",
-        "VISIBILITY_TYPE_INHERIT",
-      ],
-      optionMandatory: true,
-    })
-    visibility?: string,
-    @option({
-      short: "p",
-      long: "prefix-object",
-      description: "Prefix of the folder to be created",
-      optionMandatory: true,
-    })
-    objectPrefix?: string
+      @argument({
+        description: "Object URL",
+        alias: "objectUrl",
+      })
+          objectUrl: string,
+      @option({
+        short: "v",
+        long: "visibility",
+        description: "Transaction visibility",
+        choices: [
+          "VISIBILITY_TYPE_UNSPECIFIED",
+          "VISIBILITY_TYPE_PUBLIC_READ",
+          "VISIBILITY_TYPE_PRIVATE",
+          "VISIBILITY_TYPE_INHERIT",
+        ]
+      }) visibility?: string,
+      @option({
+        short: "p",
+        long: "prefix-object",
+        description: "Prefix of the folder to be created"
+      }) objectPrefix?: string
   ) {
-    let { bucketName, objectName } = getObjAndBucketNames(objectUrl);
+    let {bucketName, objectName} = getObjAndBucketNames(objectUrl);
+
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
-
 
     objectName = objectName + "/";
 
@@ -264,98 +131,38 @@ class ObjectService {
     if (prefix) {
       objectName = prefix + "/" + objectName;
     }
+
     try {
       let createFolderTx = await client.object.createFolder({
         bucketName,
         creator: config.publicKey,
         expectSecondarySpAddresses: [],
         objectName,
-        spInfo: {
-          endpoint: "",
-          sealAddress: "",
-          secondarySpAddresses: [],
-        },
-        file: new File([""], "file.txt"),
+        spInfo: await getPrimaryStorageProviderInfo(client),
+        file: undefined,
         visibility: visibility as keyof typeof VisibilityType ?? 'VISIBILITY_TYPE_PRIVATE'
       });
 
       const response = await executeTransaction(createFolderTx);
 
       console.log(
-        `Successfully created folder". Transaction: ${response.transactionHash}`
+          `Successfully created folder". Transaction: ${response.transactionHash}`
       );
     } catch (ex) {
       throw new Error("Unable to create folder");
     }
   }
 
-  @commandGroup({ prefix: "update", description: "Update an object" })
-  public async updateObject(
-    @argument({
-      description: "Object Url",
-      alias: "objectUrl",
-    })
-    objectUrl: string,
-    @option({
-      short: "v",
-      long: "visibility",
-      description: "Transaction visibility",
-      choices: [
-        "VISIBILITY_TYPE_UNSPECIFIED",
-        "VISIBILITY_TYPE_PUBLIC_READ",
-        "VISIBILITY_TYPE_PRIVATE",
-        "VISIBILITY_TYPE_INHERIT",
-      ],
-      optionMandatory: true,
-    })
-    visibilityFlag?: string
-  ) {
-    const { bucketName, objectName } = parseBucketAndObject(objectUrl);
-    const client = await newClient();
-    const config = await ConfigService.getInstance().getConfig();
-
-    try {
-      const objectInfo = await client.object.headObject(bucketName, objectName);
-    } catch (ex) {
-      throw new Error("Unable to get object head");
-    }
-  }
-
-  @commandGroup({
-    prefix: "getUploadInfo",
-    description: "Get the upload progress",
-  })
-  public async getUploadInfo(
-    @argument({
-      description: "Object Url",
-      alias: "objectUrl",
-    })
-    objectUrl: string
-  ) {
-    const { bucketName, objectName } = getObjAndBucketNames(objectUrl);
-    const client = await newClient();
-    const config = await ConfigService.getInstance().getConfig();
-    //getting upload info
-    console.log(`Successfully got the information about the ${objectUrl}`);
-  }
-  @commandGroup({ prefix: "delete", description: "Delete an object" })
+  @command({name: "delete", description: "Delete an object"})
   public async deleteObject(
-    @argument({
-      description: "Bucket name",
-      alias: "bucketName",
-    })
-    bucketName: string,
-    @argument({
-      description: "Object name",
-      alias: "objectName",
-    })
-    objectName: string,
-    @argument({
-      description: "operator",
-      alias: "operator",
-    })
-    operator: string
+      @argument({
+        description: "Object URL",
+        alias: "objectUrl",
+      })
+          objectUrl: string,
   ) {
+    const {bucketName, objectName} = parseBucketAndObject(objectUrl);
+
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
 
@@ -364,7 +171,7 @@ class ObjectService {
       deleteObjTx = await client.object.deleteObject({
         bucketName,
         objectName,
-        operator,
+        operator: config.publicKey,
       });
     } catch (ex) {
       throw new Error("Unable to initialize deleting object");
@@ -372,7 +179,7 @@ class ObjectService {
 
     const response = await executeTransaction(deleteObjTx);
     console.log(
-      `Successfully deleted payment account "${objectName}" at bucket ${bucketName}. Transaction: ${response.transactionHash}`
+        `Successfully deleted payment account "${objectName}" at bucket ${bucketName}. Transaction: ${response.transactionHash}`
     );
   }
 }
