@@ -173,7 +173,7 @@ class BucketService {
       const response = await executeTransaction(deleteTx);
 
       console.log(
-        `Successfully updated bucket "${bucketName}". Transaction: ${response.transactionHash}`
+        `Successfully deleted bucket "${bucketName}". Transaction: ${response.transactionHash}`
       );
     } catch (ex) {
       throw new Error("Unable to delete bucket");
