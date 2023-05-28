@@ -1,4 +1,11 @@
 import './modules/bucket';
+import './modules/account';
+import './modules/cmd_group';
+import './modules/cmd_head';
+import './modules/cmd_object';
+import './modules/cmd_payment';
+import './modules/cmd_sp';
+import './modules/crosschain';
 import './modules/config';
 
 import commander from "commander";
