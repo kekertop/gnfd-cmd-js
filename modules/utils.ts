@@ -10,8 +10,20 @@ function getBucketNameByUrl(urlInfo: string): string {
   const splits = urlInfo.split("/", 1);
   return splits[0];
 }
-
-function getGroupNameByUrl(urlInfo: string) {}
+function parseBucket(urlInfo: string) {
+  if (urlInfo.includes("gnfd://")) {
+    urlInfo = urlInfo.slice("gnfd://".length);
+  }
+  const splits = urlInfo.split("/", 1);
+  return splits[0];
+}
+function getGroupNameByUrl(urlInfo: string) {
+  const bucketName = parseBucket(urlInfo);
+  if (!bucketName) {
+    throw new Error("fail to parse group name");
+  }
+  return bucketName;
+}
 
 function parseActions(actionsFlag?: string, isObjectPolicy?: boolean) {}
 
