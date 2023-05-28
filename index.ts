@@ -1,10 +1,10 @@
 import './modules/bucket';
 import './modules/account';
-import './modules/cmd_group';
-import './modules/cmd_head';
-import './modules/cmd_object';
-import './modules/cmd_payment';
-import './modules/cmd_sp';
+import './modules/group';
+import './modules/head';
+import './modules/object';
+import './modules/payment';
+import './modules/storageProviders';
 import './modules/crosschain';
 import './modules/config';
 
