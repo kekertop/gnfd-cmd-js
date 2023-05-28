@@ -1,8 +1,6 @@
 import * as url from "url";
 import {} from "@bnb-chain/greenfield-chain-sdk";
 
-function getPassword(config: string, passwordFileFlag?: string) {}
-
 function getBucketNameByUrl(urlInfo: string): string {
   if (urlInfo.includes("gnfd://")) {
     urlInfo = urlInfo.slice("gnfd://".length);
@@ -24,8 +22,6 @@ function getGroupNameByUrl(urlInfo: string) {
   }
   return bucketName;
 }
-
-function parseActions(actionsFlag?: string, isObjectPolicy?: boolean) {}
 
 function parseBucketAndObject(urlPath: string) {
   if (urlPath.includes("gnfd://")) {
@@ -51,10 +47,8 @@ function getObjAndBucketNames(urlInfo: string) {
   return { bucketName, objectName };
 }
 export {
-  getPassword,
   getBucketNameByUrl,
   getGroupNameByUrl,
-  parseActions,
   parseBucketAndObject,
   getObjAndBucketNames,
 };
