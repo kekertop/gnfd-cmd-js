@@ -3,8 +3,13 @@ import { newClient } from "./client";
 import { ConfigService } from "./config";
 import { VisibilityType } from "@bnb-chain/greenfield-cosmos-types/greenfield/storage/common";
 import {executeTransaction} from "../utils/transactionUtils";
+import {commandGroup} from "../cli-decorators/commandGroup";
+import {command} from "../cli-decorators/command";
+import {argument} from "../cli-decorators/argument";
 
+@commandGroup({ prefix: "storage", description: "Storage operations" })
 class StorageProvService {
+  @command({ name: "list", description: "List existing storage providers" })
   public async listSP() {
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
@@ -25,7 +30,12 @@ class StorageProvService {
     });
   }
 
+  @command({ name: "query", description: "Get information about storage providers" })
   public async querySP(
+      @argument({
+        description: "endpoint address",
+        alias: "endpoint",
+      })
       endpoint: string // "<Storage Provider endpoint>",
   ) {
     const client = await newClient();
@@ -49,7 +59,12 @@ class StorageProvService {
     );
   }
 
+  @command({ name: "getprice", description: "Get quota and store price for storage provider endpoint" })
   public async getQuotaPrice(
+      @argument({
+        description: "endpoint address",
+        alias: "endpoint",
+      })
       endpoint: string // "<Storage Provider endpoint>"
   ) {
     const client = await newClient();

@@ -7,10 +7,25 @@ import {
   executeTransaction,
   getPrimaryStorageProviderInfo,
 } from "../utils/transactionUtils";
+import {commandGroup} from "../cli-decorators/commandGroup";
+import {command} from "../cli-decorators/command";
+import {argument} from "../cli-decorators/argument";
+import {option} from "../cli-decorators/option";
 
+@commandGroup({ prefix: "payment", description: "Payment operations" })
 class PaymentService {
+  @command({ name: "buy", description: "Buy quota for bucket" })
   public async buyQuotaForBucket(
+      @argument({
+        description: "Bucket URL",
+        alias: "bucket-url",
+      })
       bucketUrl: string,
+      @option({
+        short: "c",
+        long: "charge-quota-flag",
+        description: "target quota for the bucket",
+      })
       chargeQuotaFlag?: number
   ) {
     const client = await newClient();
@@ -19,6 +34,7 @@ class PaymentService {
     const spInfo = await client.sp.getStorageProviders();
     let buyQuotaTx
     try {
+      //no function in sdk to buy quota
       buyQuotaTx = await client.bucket.getBucketReadQuota({
         bucketName: getBucketNameByUrl(bucketUrl),
         endpoint: spInfo[0].endpoint,
@@ -31,7 +47,12 @@ class PaymentService {
     );
   }
 
+  @command({ name: "getinfo", description: "Get info about a bucket quota" })
   public async getQuotaInfo(
+      @argument({
+        description: "Bucket URL",
+        alias: "bucket-url",
+      })
       bucketUrl: string
   ) {
     const client = await newClient();

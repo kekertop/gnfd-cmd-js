@@ -7,9 +7,30 @@ import {
   MsgMirrorObject,
 } from "@bnb-chain/greenfield-cosmos-types/greenfield/storage/tx";
 import { Client, TxResponse } from "@bnb-chain/greenfield-chain-sdk";
+import {commandGroup} from "../cli-decorators/commandGroup";
+import {command} from "../cli-decorators/command";
+import {option} from "../cli-decorators/option";
 
+@commandGroup({ prefix: "cc", description: "Cross-Chain operations" })
 class CrosschainService {
-  public async transferOut(toAddressFlag?: string, amountFlag?: number) {
+  @command({ name: "tout", description: "Transfer BNB from Greenfield to BSC account" })
+  public async transferOut(
+      @option({
+        short: "t",
+        long: "to-address-flag",
+        description: "receiver address in Binance Smart Chain",
+      })
+      toAddressFlag?: string,
+      @option({
+        short: "a",
+        long: "amount",
+        description: "amount of BNB to send",
+      })
+      amountFlag?: number
+  ) {
+    if(!toAddressFlag || !amountFlag) {
+      throw new Error("Address or amount is not specified")
+    }
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
 
@@ -34,10 +55,24 @@ class CrosschainService {
     }
   }
 
+  @command({ name: "mirror", description: "mirror resource to BSC" })
   public async mirror(
-    resourceFlag?: string, // object, bucket, group
-    idFlag?: string
+      @option({
+        short: "r",
+        long: "resource",
+        description: "type of resource (object, bucket, or group)",
+      })
+      resourceFlag?: string, // object, bucket, group
+      @option({
+        short: "i",
+        long: "id",
+        description: "resource id",
+      })
+      idFlag?: string
   ) {
+    if(!resourceFlag || !idFlag) {
+      throw new Error("resource type or id is not specified")
+    }
     const client = await newClient();
 
     let mirrorTx;
