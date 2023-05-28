@@ -11,6 +11,7 @@ export interface CLIOption {
   short?: string,
   optionMandatory?: boolean,
   valueMandatory?: boolean,
+  isVariadic?: boolean,
   type?: InputType,
   valueAlias?: string,
   description?: string,
@@ -51,8 +52,16 @@ function buildOption(option: CLIOption) {
   const commanderOption = new commander.Option(buildFlag(option), option.description);
   commanderOption.default(option.defaultValue);
 
-  if (option.type != InputType.BOOLEAN) {
+  if (option && option.type != InputType.BOOLEAN && !option.isVariadic) {
     commanderOption.argParser(parser(option.type));
+  }
+
+  if (option.valueMandatory || option.valueMandatory === undefined) {
+    commanderOption.required = true;
+  }
+
+  if (option.optionMandatory && option.type != InputType.BOOLEAN) {
+    commanderOption.mandatory = true;
   }
 
   if (option.choices) {
@@ -60,6 +69,7 @@ function buildOption(option: CLIOption) {
       throw new Error('Unable to provide choices with non-string input type');
     }
 
+    // commanderOption.variadic = true;
     commanderOption.choices(option.choices);
   }
 
@@ -67,7 +77,7 @@ function buildOption(option: CLIOption) {
 }
 
 function buildFlag(option: CLIOption) {
-  return `-${option.short ?? ''} --${option.long} ${buildTag(option)}`
+  return `-${option.short ?? ''}, --${option.long} ${buildTag(option)}`
 }
 
 function buildTag(option: CLIOption) {
@@ -81,7 +91,10 @@ function buildTag(option: CLIOption) {
     return '';
   }
 
-  const valueAlias = option.valueAlias ?? 'value';
+  let valueAlias = option.valueAlias ?? 'value';
+  if (option.isVariadic) {
+    valueAlias += '...';
+  }
 
   return valueMandatory ? `<${valueAlias}>` : `[${valueAlias}]`;
 }

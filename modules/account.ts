@@ -5,10 +5,11 @@ import {commandGroup} from "../cli-decorators/commandGroup";
 import {command} from "../cli-decorators/command";
 import {option} from "../cli-decorators/option";
 import {argument} from "../cli-decorators/argument";
+import {InputType} from "../utils/inputType";
 
-@commandGroup({ prefix: "account", description: "Payment account operations" })
+@commandGroup({prefix: "account", description: "Payment account operations"})
 class AccountService {
-  @command({ name: "create", description: "Create payment account" })
+  @command({name: "create", description: "Create payment account"})
   public async createPaymentAccount() {
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
@@ -29,24 +30,22 @@ class AccountService {
     );
   }
 
-  @command({ name: "deposit", description: "Deposit to the payment account" })
+  @command({name: "deposit", description: "Deposit to the payment account"})
   public async deposit(
       @option({
         short: "t",
-        long: "to-address-flag",
+        long: "to-address",
         description: "Address of the payment account to deposit to",
-      })
-      toAddressFlag: string,
+        optionMandatory: true
+      }) toAddress: string,
       @option({
         short: "a",
-        long: "amount-flag",
+        long: "amount",
         description: "Amount to deposit",
-      })
-      amountFlag: string
+        type: InputType.NUMBER,
+        optionMandatory: true
+      }) amount: number
   ) {
-    if(!toAddressFlag || !amountFlag) {
-      throw new Error("Unable to deposit without address or amount")
-    }
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
 
@@ -54,8 +53,8 @@ class AccountService {
     try {
       depositTx = await client.payment.deposit({
         creator: config.publicKey,
-        to: toAddressFlag,
-        amount: amountFlag,
+        to: toAddress,
+        amount: amount.toString(),
       });
     } catch (ex) {
       throw new Error("Unable to initialize deposit to payment account");
@@ -64,28 +63,26 @@ class AccountService {
     const response = await executeTransaction(depositTx);
 
     console.log(
-        `Successfully deposited "${amountFlag}" to "${toAddressFlag}" payment account. Transaction: ${response.transactionHash}`
+        `Successfully deposited "${amount}" to "${toAddress}" payment account. Transaction: ${response.transactionHash}`
     );
   }
 
-  @command({ name: "withdraw", description: "Withdraw from the payment account" })
+  @command({name: "withdraw", description: "Withdraw from the payment account"})
   public async withdraw(
       @option({
         short: "f",
-        long: "from-address-flag",
+        long: "from-address",
         description: "Address of the payment account to withdraw from",
-      })
-      fromAddressFlag: string,
+        optionMandatory: true
+      }) fromAddressFlag: string,
       @option({
         short: "a",
-        long: "amount-flag",
+        long: "amount",
         description: "Amount to withdraw",
-      })
-      amountFlag: string
+        type: InputType.NUMBER,
+        optionMandatory: true
+      }) amountFlag: number
   ) {
-    if(!fromAddressFlag || !amountFlag) {
-      throw new Error("Unable to withdraw without address or amount")
-    }
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
 
@@ -94,7 +91,7 @@ class AccountService {
       withdrawTx = await client.payment.withdraw({
         creator: config.publicKey,
         from: fromAddressFlag,
-        amount: amountFlag,
+        amount: amountFlag.toString(),
       });
     } catch (ex) {
       throw new Error("Unable to initialize withdraw from payment account");
@@ -107,13 +104,12 @@ class AccountService {
     );
   }
 
-  @command({ name: "list", description: "List existing payment accounts" })
+  @command({name: "list", description: "List existing payment accounts"})
   public async listPaymentAccounts(
       @argument({
-        description: "owner address",
-        alias: "owner-addr",
-      })
-      ownerAddressFlag: string
+        description: "Owner address",
+        alias: "owner-address",
+      }) ownerAddressFlag: string
   ) {
     const client = await newClient();
 
@@ -127,13 +123,12 @@ class AccountService {
     console.log(getListPayAccTx.paymentAccounts);
   }
 
-  @command({ name: "getBalance", description: "get balance of an existing payment account" })
+  @command({name: "getBalance", description: "get balance of an existing payment account"})
   public async getAccountBalance(
       @argument({
-        description: "account address",
-        alias: "addr",
-      })
-      addressFlag: string
+        description: "Account address",
+        alias: "address",
+      }) addressFlag: string
   ) {
     const client = await newClient();
 
@@ -151,24 +146,22 @@ class AccountService {
     );
   }
 
-  @command({ name: "transfer", description: "transfer BNB to an existing payment account" })
+  @command({name: "transfer", description: "transfer BNB to an existing payment account"})
   public async transfer(
       @option({
         short: "t",
-        long: "to-address-flag",
-        description: "Account address to transsfer to",
-      })
-      toAddressFlag: string,
+        long: "to-address",
+        description: "Account address to transfer to",
+        optionMandatory: true
+      }) toAddress: string,
       @option({
         short: "a",
-        long: "amount-flag",
+        long: "amount",
         description: "Amount to send",
-      })
-      amountFlag: string
+        type: InputType.NUMBER,
+        optionMandatory: true
+      }) amount: number
   ) {
-    if(!toAddressFlag || !amountFlag) {
-      throw new Error("Unable to transfer without address or amount")
-    }
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
 
@@ -176,11 +169,11 @@ class AccountService {
     try {
       transferTx = await client.account.transfer({
         fromAddress: config.publicKey,
-        toAddress: toAddressFlag,
+        toAddress: toAddress,
         amount: [
           {
             denom: "BNB",
-            amount: amountFlag,
+            amount: amount.toString(),
           },
         ],
       });
@@ -191,7 +184,7 @@ class AccountService {
     const response = await executeTransaction(transferTx);
 
     console.log(
-        `Successfully transferred ${amountFlag} BNB to ${toAddressFlag}. Transaction ${response.transactionHash}`
+        `Successfully transferred ${amount} BNB to ${toAddress}. Transaction ${response.transactionHash}`
     );
   }
 }

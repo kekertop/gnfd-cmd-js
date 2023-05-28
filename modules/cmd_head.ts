@@ -19,9 +19,9 @@ class HeadService {
       objectUrl: string
   ) {
     const client = await newClient();
-    const config = await ConfigService.getInstance().getConfig();
-    const bucketName = parseBucketAndObject(objectUrl)[0]
-    const objectName = parseBucketAndObject(objectUrl)[1]
+
+    const bucketName = parseBucketAndObject(objectUrl).bucketName
+    const objectName = parseBucketAndObject(objectUrl).objectName
 
     let headObjectTx
     try {
@@ -46,7 +46,6 @@ class HeadService {
       bucketUrl: string
   ) {
     const client = await newClient();
-    const config = await ConfigService.getInstance().getConfig();
 
     const bucketName = getBucketNameByUrl(bucketUrl);
     let headBucketTx

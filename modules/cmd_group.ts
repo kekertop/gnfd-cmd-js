@@ -1,8 +1,6 @@
-// createBucket send the create bucket request to storage provider
-import {getBucketNameByUrl, getGroupNameByUrl} from "./utils";
-import { newClient } from "./client";
-import { ConfigService } from "./config";
-import { VisibilityType } from "@bnb-chain/greenfield-cosmos-types/greenfield/storage/common";
+import {getGroupNameByUrl} from "./utils";
+import {newClient} from "./client";
+import {ConfigService} from "./config";
 import {executeTransaction} from "../utils/transactionUtils";
 import {commandGroup} from "../cli-decorators/commandGroup";
 import {command} from "../cli-decorators/command";
@@ -10,33 +8,29 @@ import {argument} from "../cli-decorators/argument";
 import {option} from "../cli-decorators/option";
 
 
-@commandGroup({ prefix: "group", description: "Group operations" })
+@commandGroup({prefix: "group", description: "Group operations"})
 class GroupService {
-  @command({ name: "create", description: "create group" })
+  @command({name: "create", description: "create group"})
   public async createGroup(
       @argument({
-        description: "creator account address",
+        description: "Creator account address",
         alias: "creator",
-      })
-      creator: string,
+      }) creator: string,
       @option({
         short: "n",
         long: "name",
-        description: "name of the created group",
-      })
-      groupName?: string,
+        description: "Name of the created group",
+        optionMandatory: true
+      }) groupName: string,
       @option({
         short: "m",
         long: "members",
-        description: "array of members' addresses",
-      })
-      members?: string[],
+        description: "Array of members' addresses",
+        optionMandatory: true,
+        isVariadic: true
+      }) members?: string[]
   ) {
-    if(!groupName || !members) {
-      throw new Error("Name of the group and members are not specified")
-    }
     const client = await newClient();
-    const config = await ConfigService.getInstance().getConfig();
 
     let createGroupTx
     try {
@@ -45,8 +39,8 @@ class GroupService {
         groupName,
         members,
       });
-    } catch(ex) {
-      throw new Error("Unable to initialize group creation")
+    } catch (ex) {
+      throw new Error("Unable to create group")
     }
     const response = await executeTransaction(createGroupTx);
     console.log(
@@ -54,70 +48,68 @@ class GroupService {
     );
   }
 
-  @command({ name: "update", description: "update group member" })
+  @command({name: "update", description: "update group member"})
   public async updateGroupMember(
       @argument({
-        description: "group URL",
-        alias: "group-url",
-      })
-      groupUrl: string,
-      @option({
-        short: "a",
-        long: "add-members-flag",
-        description: "members to add separated by comma",
-      })
-      addMemberFlag?: string,
-      @option({
-        short: "r",
-        long: "remove-members-flag",
-        description: "members to delete separated by comma",
-      })
-      removeMemberFlag?: string,
+        description: "Group URL",
+        alias: "group-url"
+      }) groupUrl: string,
       @option({
         short: "o",
-        long: "group-owner-flag",
-        description: "owner of the group",
-      })
-      groupOwnerFlag?: string,
+        long: "group-owner",
+        description: "Owner of the group",
+        optionMandatory: true
+      }) groupOwnerFlag: string,
+      @option({
+        short: "a",
+        long: "add-members",
+        description: "Members to add",
+        isVariadic: true
+      }) membersToAdd?: string[],
+      @option({
+        short: "r",
+        long: "remove-members",
+        description: "Members to delete",
+        isVariadic: true
+      }) membersToDelete?: string[]
   ) {
-    if(!addMemberFlag || !removeMemberFlag || !groupOwnerFlag) {
-      throw new Error("Group owner, New members, or Old members are not specified")
+    if (!membersToAdd && !membersToDelete) {
+      throw new Error("Neither members to add nor members to delete from the group are specified ")
     }
+
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
 
     const groupName = getGroupNameByUrl(groupUrl)
-    const membersToAdd : string[] = addMemberFlag.split("");
-    const membersToDelete : string[] = removeMemberFlag.split("");
+
     let updateGroupMemberTx
     try {
       updateGroupMemberTx = await client.group.updateGroupMember({
-        groupName,
+        groupName: groupName,
         groupOwner: groupOwnerFlag,
-        membersToAdd,
-        membersToDelete,
+        membersToAdd: membersToAdd,
+        membersToDelete: membersToDelete,
         operator: config.publicKey,
       });
-    } catch(ex) {
+    } catch (ex) {
       throw new Error("Unable to initialize group member update")
     }
+
     const response = await executeTransaction(updateGroupMemberTx);
     console.log(
         `Successfully updated group "${groupName}". Transaction: ${response.transactionHash}`
     );
   }
 
-  @command({ name: "delete", description: "delete the group" })
+  @command({name: "delete", description: "Delete the group"})
   public async deleteGroup(
       @argument({
         description: "group name",
         alias: "group-name",
-      })
-      groupName: string,
+      }) groupName: string,
   ) {
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
-
 
     let deleteGroupTx
     try {
@@ -125,7 +117,7 @@ class GroupService {
         groupName,
         operator: config.publicKey
       });
-    } catch(ex) {
+    } catch (ex) {
       throw new Error("Unable to initialize group deletion")
     }
 

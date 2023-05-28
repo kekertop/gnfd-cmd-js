@@ -1,5 +1,7 @@
-import * as url from "url";
-import {} from "@bnb-chain/greenfield-chain-sdk";
+interface BucketAndObject {
+  bucketName: string,
+  objectName: string
+}
 
 function getBucketNameByUrl(urlInfo: string): string {
   if (urlInfo.includes("gnfd://")) {
@@ -23,7 +25,7 @@ function getGroupNameByUrl(urlInfo: string) {
   return bucketName;
 }
 
-function parseBucketAndObject(urlPath: string) {
+function parseBucketAndObject(urlPath: string): BucketAndObject {
   if (urlPath.includes("gnfd://")) {
     urlPath = urlPath.slice("gnfd://".length);
   }
@@ -39,13 +41,15 @@ function parseBucketAndObject(urlPath: string) {
     objectName: urlPath.slice(index + 1),
   };
 }
+
 function getObjAndBucketNames(urlInfo: string) {
-  const { bucketName, objectName } = parseBucketAndObject(urlInfo);
+  const {bucketName, objectName} = parseBucketAndObject(urlInfo);
   if (!bucketName || !objectName) {
     throw new Error("fail to parse bucket name or object name");
   }
-  return { bucketName, objectName };
+  return {bucketName, objectName};
 }
+
 export {
   getBucketNameByUrl,
   getGroupNameByUrl,
