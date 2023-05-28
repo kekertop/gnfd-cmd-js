@@ -71,7 +71,7 @@ class HeadService {
         long: "group-owner-flag",
         description: "Group owner (specify if you are not owner)",
       })
-      groupOwnerFlag?: string
+      groupOwner?: string
   ) {
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
@@ -81,7 +81,7 @@ class HeadService {
     try {
       headGroupTx = await client.group.headGroup(
           groupName,
-          groupOwnerFlag || config.publicKey
+          groupOwner || config.publicKey
       );
     } catch(ex) {
       throw new Error("Unable to fetch group info")

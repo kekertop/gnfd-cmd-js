@@ -33,7 +33,7 @@ class StorageProvService {
   @command({ name: "query", description: "Get information about storage providers" })
   public async querySP(
       @argument({
-        description: "endpoint address",
+        description: "Endpoint address",
         alias: "endpoint",
       })
       endpoint: string // "<Storage Provider endpoint>",
@@ -62,7 +62,7 @@ class StorageProvService {
   @command({ name: "getprice", description: "Get quota and store price for storage provider endpoint" })
   public async getQuotaPrice(
       @argument({
-        description: "endpoint address",
+        description: "Endpoint address",
         alias: "endpoint",
       })
       endpoint: string // "<Storage Provider endpoint>"

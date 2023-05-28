@@ -21,14 +21,14 @@ class CrosschainService {
         description: "receiver address in Binance Smart Chain",
         optionMandatory: true,
       })
-      toAddressFlag?: string,
+      toAddress?: string,
       @option({
         short: "a",
         long: "amount",
         description: "amount of BNB to send",
         optionMandatory: true,
       })
-      amountFlag?: number
+      amount?: number
   ) {
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
@@ -37,17 +37,17 @@ class CrosschainService {
     try {
       transferOutTx = await client.crosschain.transferOut({
         from: config.publicKey,
-        to: toAddressFlag,
+        to: toAddress,
         amount: {
           denom: "BNB",
-          amount: amountFlag.toString() ?? "0",
+          amount: amount.toString() ?? "0",
         },
       });
 
       const response = await executeTransaction(transferOutTx);
 
       console.log(
-        `Successfully transferred out ${amountFlag} BNB to ${toAddressFlag}. Transaction hash: ${response.transactionHash}`
+        `Successfully transferred out ${amount} BNB to ${toAddress}. Transaction hash: ${response.transactionHash}`
       );
     } catch (ex) {
       throw new Error("Unable to transfer out");
@@ -66,31 +66,29 @@ class CrosschainService {
           "BUCKET",
         ],
         optionMandatory: true,
-      })
-      resourceFlag?: string, // object, bucket, group
+      }) resource?: string, // object, bucket, group
       @option({
         short: "i",
         long: "id",
         description: "resource id",
         optionMandatory: true,
-      })
-      idFlag?: string
+      }) id?: string
   ) {
     const client = await newClient();
 
     let mirrorTx;
     try {
       const parameters: MsgMirrorObject | MsgMirrorGroup | MsgMirrorBucket = {
-        id: idFlag,
+        id: id,
         operator: "",
       };
 
-      mirrorTx = await this.mirrorInternal(client, resourceFlag, parameters);
+      mirrorTx = await this.mirrorInternal(client, resource, parameters);
 
       const response = await executeTransaction(mirrorTx);
 
       console.log(
-        `Successfully mirrored ${resourceFlag} with ID ${idFlag}. Transaction hash: ${response.transactionHash}`
+        `Successfully mirrored ${resource} with ID ${id}. Transaction hash: ${response.transactionHash}`
       );
     } catch (ex) {
       throw new Error("Unable to transfer out");

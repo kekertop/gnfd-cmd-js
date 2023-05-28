@@ -74,14 +74,14 @@ class AccountService {
         long: "from-address",
         description: "Address of the payment account to withdraw from",
         optionMandatory: true
-      }) fromAddressFlag: string,
+      }) fromAddress: string,
       @option({
         short: "a",
         long: "amount",
         description: "Amount to withdraw",
         type: InputType.NUMBER,
         optionMandatory: true
-      }) amountFlag: number
+      }) amount: number
   ) {
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
@@ -90,8 +90,8 @@ class AccountService {
     try {
       withdrawTx = await client.payment.withdraw({
         creator: config.publicKey,
-        from: fromAddressFlag,
-        amount: amountFlag.toString(),
+        from: fromAddress,
+        amount: amount.toString(),
       });
     } catch (ex) {
       throw new Error("Unable to initialize withdraw from payment account");
@@ -100,7 +100,7 @@ class AccountService {
     const response = await executeTransaction(withdrawTx);
 
     console.log(
-        `Successfully withdrew "${amountFlag}" from "${fromAddressFlag}" payment account. Transaction: ${response.transactionHash}`
+        `Successfully withdrew "${amount}" from "${fromAddress}" payment account. Transaction: ${response.transactionHash}`
     );
   }
 
@@ -109,13 +109,13 @@ class AccountService {
       @argument({
         description: "Owner address",
         alias: "owner-address",
-      }) ownerAddressFlag: string
+      }) ownerAddress: string
   ) {
     const client = await newClient();
 
     let getListPayAccTx;
     try {
-      getListPayAccTx = await client.account.getPaymentAccountsByOwner(ownerAddressFlag);
+      getListPayAccTx = await client.account.getPaymentAccountsByOwner(ownerAddress);
     } catch (ex) {
       throw new Error("Cannot get payments accounts by owner");
     }
@@ -128,21 +128,21 @@ class AccountService {
       @argument({
         description: "Account address",
         alias: "address",
-      }) addressFlag: string
+      }) address: string
   ) {
     const client = await newClient();
 
     let getAccBalTx;
     try {
       getAccBalTx = await client.account.getAccountBalance({
-        address: addressFlag,
+        address: address,
         denom: "BNB",
       });
     } catch (ex) {
       throw new Error("Unable to retrieve account balance");
     }
     console.log(
-        `Account ${addressFlag} has ${getAccBalTx.balance?.amount} BNB`
+        `Account ${address} has ${getAccBalTx.balance?.amount} BNB`
     );
   }
 

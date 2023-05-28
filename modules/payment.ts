@@ -27,7 +27,7 @@ class PaymentService {
         description: "target quota for the bucket",
         optionMandatory: true,
       })
-      chargeQuotaFlag?: number
+      chargeQuota?: number
   ) {
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();

@@ -55,7 +55,7 @@ class GroupService {
         long: "group-owner",
         description: "Owner of the group",
         optionMandatory: true
-      }) groupOwnerFlag: string,
+      }) groupOwner: string,
       @option({
         short: "a",
         long: "add-members",
@@ -80,7 +80,7 @@ class GroupService {
     try {
       updateGroupMemberTx = await client.group.updateGroupMember({
         groupName: groupName,
-        groupOwner: groupOwnerFlag,
+        groupOwner: groupOwner,
         membersToAdd: membersToAdd,
         membersToDelete: membersToDelete,
         operator: config.publicKey,
