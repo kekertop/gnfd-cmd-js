@@ -54,7 +54,7 @@ class BucketService {
         visibility:
           (visibility as keyof typeof VisibilityType) ??
           "VISIBILITY_TYPE_PRIVATE",
-        chargedReadQuota: chargeQuota ? chargeQuota.toString() : "0",
+        chargedReadQuota: chargeQuota?.toString() ?? "0",
         spInfo: await getPrimaryStorageProviderInfo(client, primarySP),
       });
 
