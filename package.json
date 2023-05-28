@@ -1,6 +1,6 @@
 {
   "name": "@kekertop/greenfield-js-cmd",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "Greenfield JS cmd",
   "main": "dist/index.js",
   "scripts": {
