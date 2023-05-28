@@ -244,7 +244,7 @@ class ObjectService {
       ],
       optionMandatory: true,
     })
-    visibilityFlag?: string,
+    visibility?: string,
     @option({
       short: "p",
       long: "prefix-object",
@@ -257,12 +257,7 @@ class ObjectService {
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
 
-    if (
-      !visibilityFlag ||
-      Object.values(VisibilityType).includes(visibilityFlag)
-    ) {
-      throw new Error("Visibility is set to a value that is not allowed");
-    }
+
     objectName = objectName + "/";
 
     const prefix = objectPrefix;
@@ -281,6 +276,7 @@ class ObjectService {
           secondarySpAddresses: [],
         },
         file: new File([""], "file.txt"),
+        visibility: visibility as keyof typeof VisibilityType ?? 'VISIBILITY_TYPE_PRIVATE'
       });
 
       const response = await executeTransaction(createFolderTx);

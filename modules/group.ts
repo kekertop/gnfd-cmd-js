@@ -60,19 +60,17 @@ class GroupService {
         short: "a",
         long: "add-members",
         description: "Members to add",
-        isVariadic: true
+        isVariadic: true,
+        optionMandatory: true,
       }) membersToAdd?: string[],
       @option({
         short: "r",
         long: "remove-members",
         description: "Members to delete",
-        isVariadic: true
+        isVariadic: true,
+        optionMandatory: true,
       }) membersToDelete?: string[]
   ) {
-    if (!membersToAdd && !membersToDelete) {
-      throw new Error("Neither members to add nor members to delete from the group are specified ")
-    }
-
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
 
@@ -100,7 +98,7 @@ class GroupService {
   @command({name: "delete", description: "Delete the group"})
   public async deleteGroup(
       @argument({
-        description: "group name",
+        description: "Group name",
         alias: "group-name",
       }) groupUrl: string,
   ) {

@@ -25,6 +25,7 @@ class PaymentService {
         short: "c",
         long: "charge-quota-flag",
         description: "target quota for the bucket",
+        optionMandatory: true,
       })
       chargeQuotaFlag?: number
   ) {

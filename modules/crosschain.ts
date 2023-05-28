@@ -19,18 +19,17 @@ class CrosschainService {
         short: "t",
         long: "to-address-flag",
         description: "receiver address in Binance Smart Chain",
+        optionMandatory: true,
       })
       toAddressFlag?: string,
       @option({
         short: "a",
         long: "amount",
         description: "amount of BNB to send",
+        optionMandatory: true,
       })
       amountFlag?: number
   ) {
-    if(!toAddressFlag || !amountFlag) {
-      throw new Error("Address or amount is not specified")
-    }
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
 
@@ -61,18 +60,22 @@ class CrosschainService {
         short: "r",
         long: "resource",
         description: "type of resource (object, bucket, or group)",
+        choices: [
+          "OBJECT",
+          "GROUP",
+          "BUCKET",
+        ],
+        optionMandatory: true,
       })
       resourceFlag?: string, // object, bucket, group
       @option({
         short: "i",
         long: "id",
         description: "resource id",
+        optionMandatory: true,
       })
       idFlag?: string
   ) {
-    if(!resourceFlag || !idFlag) {
-      throw new Error("resource type or id is not specified")
-    }
     const client = await newClient();
 
     let mirrorTx;
@@ -100,11 +103,11 @@ class CrosschainService {
     props: MsgMirrorObject | MsgMirrorGroup | MsgMirrorBucket
   ): Promise<TxResponse> {
     switch (resourceType) {
-      case "object":
+      case "OBJECT":
         return await client.crosschain.mirrorObject(props);
-      case "group":
+      case "GROUP":
         return await client.crosschain.mirrorGroup(props);
-      case "bucket":
+      case "BUCKET":
         return await client.crosschain.mirrorBucket(props);
     }
   }

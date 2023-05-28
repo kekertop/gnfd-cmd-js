@@ -10,10 +10,10 @@ import {option} from "../cli-decorators/option";
 
 @commandGroup({ prefix: "head", description: "Head operations" })
 class HeadService {
-  @command({ name: "object", description: "Get object head" })
+  @command({ name: "object", description: "Send headObject txn to chain && fetch object info on greenfield chain" })
   public async object(
       @argument({
-        description: "object url to get head from",
+        description: "Object url to get head from",
         alias: "object-url",
       })
       objectUrl: string
@@ -37,10 +37,10 @@ class HeadService {
     );
   }
 
-  @command({ name: "bucket", description: "Get bucket head" })
+  @command({ name: "bucket", description: "Send headBucket txn to chain && fetch bucket info on greenfield chain" })
   public async bucket(
       @argument({
-        description: "bucket url to get head from",
+        description: "Bucket url to get head from",
         alias: "bucket-url",
       })
       bucketUrl: string
@@ -59,10 +59,10 @@ class HeadService {
     );
   }
 
-  @command({ name: "group", description: "Get group head" })
+  @command({ name: "group", description: "Send headGroup txn to chain && fetch group info on greenfield chain" })
   public async group(
       @argument({
-        description: "group url to get head from",
+        description: "Group url to get head from",
         alias: "group-url",
       })
       groupUrl: string,
@@ -94,7 +94,7 @@ class HeadService {
   @command({ name: "group-member", description: "Get group member" })
   public async groupMember(
       @argument({
-        description: "group url to get head from",
+        description: "Group url to get head from",
         alias: "group-url",
       })
       groupUrl: string,
@@ -107,7 +107,8 @@ class HeadService {
       @option({
         short: "m",
         long: "head-member-flag",
-        description: "head member address",
+        description: "Head member address",
+        optionMandatory: true,
       })
       headMemberFlag?: string
   ) {
