@@ -13,7 +13,7 @@ class GroupService {
   @command({name: "create", description: "create group"})
   public async createGroup(
       @argument({
-        alias: "groupurl",
+        alias: "group-url",
         description: "Url of the group to be created",
       }) groupUrl: string,
       @option({
@@ -27,11 +27,12 @@ class GroupService {
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
 
+    const groupName = getGroupNameByUrl(groupUrl);
     let createGroupTx
     try {
       createGroupTx = await client.group.createGroup({
         creator: config.publicKey,
-        groupName: getGroupNameByUrl(groupUrl),
+        groupName: groupName,
         members,
       });
     } catch (ex) {
@@ -39,7 +40,7 @@ class GroupService {
     }
     const response = await executeTransaction(createGroupTx);
     console.log(
-        `Successfully created group "${getGroupNameByUrl(groupUrl)}". Transaction: ${response.transactionHash}`
+        `Successfully created group "${groupName}". Transaction: ${response.transactionHash}`
     );
   }
 
@@ -106,10 +107,11 @@ class GroupService {
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
 
+    const groupName = getGroupNameByUrl(groupUrl);
     let deleteGroupTx
     try {
       deleteGroupTx = await client.group.deleteGroup({
-        groupName: getGroupNameByUrl(groupUrl),
+        groupName: groupName,
         operator: config.publicKey
       });
     } catch (ex) {
