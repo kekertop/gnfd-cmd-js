@@ -1,21 +1,14 @@
-// createBucket send the create bucket request to storage provider
-import { getBucketNameByUrl } from "./utils";
-import {
-  BucketProps,
-  IObjectResultType,
-  Long,
-} from "@bnb-chain/greenfield-chain-sdk";
-import { newClient } from "./client";
-import { VisibilityType } from "@bnb-chain/greenfield-cosmos-types/greenfield/storage/common";
-import { ConfigService } from "./config";
-import { commandGroup } from "../cli-decorators/commandGroup";
-import { command } from "../cli-decorators/command";
-import { argument } from "../cli-decorators/argument";
-import { option } from "../cli-decorators/option";
-import {
-  executeTransaction,
-  getPrimaryStorageProviderInfo,
-} from "../utils/transactionUtils";
+import {getBucketNameByUrl} from "./utils";
+import {BucketProps, IObjectResultType, Long,} from "@bnb-chain/greenfield-chain-sdk";
+import {newClient} from "./client";
+import {VisibilityType} from "@bnb-chain/greenfield-cosmos-types/greenfield/storage/common";
+import {ConfigService} from "./config";
+import {commandGroup} from "../cli-decorators/commandGroup";
+import {command} from "../cli-decorators/command";
+import {argument} from "../cli-decorators/argument";
+import {option} from "../cli-decorators/option";
+import {executeTransaction, getPrimaryStorageProviderInfo,} from "../utils/transactionUtils";
+import {InputType} from "../utils/inputType";
 
 @commandGroup({ prefix: "bucket", description: "Bucket operations" })
 class BucketService {
@@ -24,20 +17,18 @@ class BucketService {
     @argument({
       description: "Bucket URL",
       alias: "bucket-url",
-    })
-    bucketUrl: string,
+    }) bucketUrl: string,
     @option({
       short: "s",
       long: "primary-storage-provider",
       description: "Primary storage provider URL",
-    })
-    primarySPFlag?: string,
+    }) primarySP?: string,
     @option({
       short: "q",
       long: "charge-quota",
       description: "Charge quota",
-    })
-    chargeQuotaFlag?: number,
+      type: InputType.NUMBER
+    }) chargeQuota?: number,
     @option({
       short: "v",
       long: "visibility",
@@ -49,7 +40,7 @@ class BucketService {
         "VISIBILITY_TYPE_INHERIT",
       ],
     })
-    visibilityFlag?: string
+    visibility?: string
   ) {
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
@@ -61,10 +52,10 @@ class BucketService {
         bucketName: bucketName,
         creator: config.publicKey,
         visibility:
-          (visibilityFlag as keyof typeof VisibilityType) ??
+          (visibility as keyof typeof VisibilityType) ??
           "VISIBILITY_TYPE_PRIVATE",
-        chargedReadQuota: chargeQuotaFlag ? chargeQuotaFlag.toString() : "0",
-        spInfo: await getPrimaryStorageProviderInfo(client, primarySPFlag),
+        chargedReadQuota: chargeQuota ? chargeQuota.toString() : "0",
+        spInfo: await getPrimaryStorageProviderInfo(client, primarySP),
       });
 
       const response = await executeTransaction(createBucketTx);
@@ -82,20 +73,18 @@ class BucketService {
       @argument({
         description: "Bucket URL",
         alias: "bucket-url",
-      })
-      bucketUrl: string,
+      }) bucketUrl: string,
       @option({
         short: "p",
         long: "payment-flag",
         description: "Payment flag",
-      })
-      paymentFlag?: string,
+      }) paymentAddress?: string,
       @option({
         short: "c",
         long: "charge-quota",
         description: "chargeQuotaFlag",
-      })
-      chargeQuotaFlag?: number,
+        type: InputType.NUMBER
+      }) chargeQuota?: number,
       @option({
         short: "v",
         long: "visibility",
@@ -106,8 +95,7 @@ class BucketService {
           "VISIBILITY_TYPE_PRIVATE",
           "VISIBILITY_TYPE_INHERIT",
         ],
-      })
-      visibilityFlag?: any
+      }) visibility?: string
   ) {
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
@@ -120,10 +108,10 @@ class BucketService {
         operator: config.publicKey,
         bucketName: bucketName,
         chargedReadQuota: {
-          value: new Long(chargeQuotaFlag ?? 0),
+          value: new Long(chargeQuota ?? 0),
         },
-        paymentAddress: paymentFlag ?? "",
-        visibility: visibilityFlag || "VISIBILITY_TYPE_PRIVATE",
+        paymentAddress: paymentAddress ?? "",
+        visibility: VisibilityType[visibility as keyof typeof VisibilityType] ?? VisibilityType.VISIBILITY_TYPE_PRIVATE,
       });
 
       const response = await executeTransaction(updateBucketTx);
@@ -168,8 +156,7 @@ class BucketService {
       @argument({
         description: "Bucket URL",
         alias: "bucket-url",
-      })
-      bucketUrl: string
+      }) bucketUrl: string
   ) {
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();

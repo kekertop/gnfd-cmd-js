@@ -67,6 +67,8 @@ export class ConfigService {
     try {
       await fs.mkdir(path.dirname(this.configLocation), {recursive: true});
       await fs.writeFile(this.configLocation, JSON.stringify(config), {mode: '777'});
+
+      console.log(`Successfully wrote config into ${this.configLocation}`);
     } catch (ex) {
       throw new Error('Error occurred while saving config.');
     }

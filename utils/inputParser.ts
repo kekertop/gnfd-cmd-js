@@ -12,6 +12,8 @@ function parse(value: string, type: InputType) {
       return parseNumber(value);
     case InputType.BOOLEAN:
       return parseBoolean(value);
+    default:
+      return value;
   }
 }
 
