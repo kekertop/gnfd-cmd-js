@@ -77,11 +77,37 @@ class BucketService {
     }
   }
 
+  @command({ name: "update", description: "Update bucket" })
   public async updateBucket(
-    bucketUrl: string,
-    paymentFlag?: string,
-    chargeQuotaFlag?: number,
-    visibilityFlag?: any
+      @argument({
+        description: "Bucket URL",
+        alias: "bucket-url",
+      })
+      bucketUrl: string,
+      @option({
+        short: "p",
+        long: "payment-flag",
+        description: "Payment flag",
+      })
+      paymentFlag?: string,
+      @option({
+        short: "c",
+        long: "charge-quota",
+        description: "chargeQuotaFlag",
+      })
+      chargeQuotaFlag?: number,
+      @option({
+        short: "v",
+        long: "visibility",
+        description: "Transaction visibility",
+        choices: [
+          "VISIBILITY_TYPE_UNSPECIFIED",
+          "VISIBILITY_TYPE_PUBLIC_READ",
+          "VISIBILITY_TYPE_PRIVATE",
+          "VISIBILITY_TYPE_INHERIT",
+        ],
+      })
+      visibilityFlag?: any
   ) {
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
@@ -110,6 +136,7 @@ class BucketService {
     }
   }
 
+  @command({ name: "list", description: "List existing user buckets" })
   public async listBuckets() {
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
@@ -136,7 +163,14 @@ class BucketService {
     });
   }
 
-  public async deleteBucket(bucketUrl: string) {
+  @command({ name: "delete", description: "Delete a bucket by url" })
+  public async deleteBucket(
+      @argument({
+        description: "Bucket URL",
+        alias: "bucket-url",
+      })
+      bucketUrl: string
+  ) {
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
 

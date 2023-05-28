@@ -1,9 +1,14 @@
 import {newClient} from "./client";
 import {ConfigService} from "./config";
 import {executeTransaction} from "../utils/transactionUtils";
+import {commandGroup} from "../cli-decorators/commandGroup";
+import {command} from "../cli-decorators/command";
+import {option} from "../cli-decorators/option";
+import {argument} from "../cli-decorators/argument";
 
-
+@commandGroup({ prefix: "account", description: "Payment account operations" })
 class AccountService {
+  @command({ name: "create", description: "Create payment account" })
   public async createPaymentAccount() {
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
@@ -24,7 +29,24 @@ class AccountService {
     );
   }
 
-  public async deposit(toAddressFlag: string, amountFlag: string) {
+  @command({ name: "deposit", description: "Deposit to the payment account" })
+  public async deposit(
+      @option({
+        short: "t",
+        long: "to-address-flag",
+        description: "Address of the payment account to deposit to",
+      })
+      toAddressFlag: string,
+      @option({
+        short: "a",
+        long: "amount-flag",
+        description: "Amount to deposit",
+      })
+      amountFlag: string
+  ) {
+    if(!toAddressFlag || !amountFlag) {
+      throw new Error("Unable to deposit without address or amount")
+    }
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
 
@@ -46,7 +68,24 @@ class AccountService {
     );
   }
 
-  public async withdraw(fromAddressFlag: string, amountFlag: string) {
+  @command({ name: "withdraw", description: "Withdraw from the payment account" })
+  public async withdraw(
+      @option({
+        short: "f",
+        long: "from-address-flag",
+        description: "Address of the payment account to withdraw from",
+      })
+      fromAddressFlag: string,
+      @option({
+        short: "a",
+        long: "amount-flag",
+        description: "Amount to withdraw",
+      })
+      amountFlag: string
+  ) {
+    if(!fromAddressFlag || !amountFlag) {
+      throw new Error("Unable to withdraw without address or amount")
+    }
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
 
@@ -68,7 +107,14 @@ class AccountService {
     );
   }
 
-  public async listPaymentAccounts(ownerAddressFlag: string) {
+  @command({ name: "list", description: "List existing payment accounts" })
+  public async listPaymentAccounts(
+      @argument({
+        description: "owner address",
+        alias: "owner-addr",
+      })
+      ownerAddressFlag: string
+  ) {
     const client = await newClient();
 
     let getListPayAccTx;
@@ -81,7 +127,14 @@ class AccountService {
     console.log(getListPayAccTx.paymentAccounts);
   }
 
-  public async getAccountBalance(addressFlag: string) {
+  @command({ name: "getBalance", description: "get balance of an existing payment account" })
+  public async getAccountBalance(
+      @argument({
+        description: "account address",
+        alias: "addr",
+      })
+      addressFlag: string
+  ) {
     const client = await newClient();
 
     let getAccBalTx;
@@ -98,7 +151,24 @@ class AccountService {
     );
   }
 
-  public async transfer(toAddressFlag: string, amountFlag: string) {
+  @command({ name: "transfer", description: "transfer BNB to an existing payment account" })
+  public async transfer(
+      @option({
+        short: "t",
+        long: "to-address-flag",
+        description: "Account address to transsfer to",
+      })
+      toAddressFlag: string,
+      @option({
+        short: "a",
+        long: "amount-flag",
+        description: "Amount to send",
+      })
+      amountFlag: string
+  ) {
+    if(!toAddressFlag || !amountFlag) {
+      throw new Error("Unable to transfer without address or amount")
+    }
     const client = await newClient();
     const config = await ConfigService.getInstance().getConfig();
 
