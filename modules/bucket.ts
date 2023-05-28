@@ -144,9 +144,10 @@ class BucketService {
       console.log("Empty");
     }
 
-    if (listBucketTx.code != 0) {
-      throw new Error(`Error: ${listBucketTx.message}. Code: ${listBucketTx.code}`);
+    if (listBucketTx.statusCode != 200) {
+      throw new Error(`${listBucketTx.message}. Code: ${listBucketTx.code}`);
     }
+
     if (!listBucketTx.body || listBucketTx.body.length == 0) {
       console.log("Empty");
     } else {
