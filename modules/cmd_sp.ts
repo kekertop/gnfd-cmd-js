@@ -1,42 +1,73 @@
 import { getBucketNameByUrl } from "./utils";
-import { Client, Long } from "@bnb-chain/greenfield-chain-sdk";
+import { newClient } from "./client";
+import { ConfigService } from "./config";
 import { VisibilityType } from "@bnb-chain/greenfield-cosmos-types/greenfield/storage/common";
+import {executeTransaction} from "../utils/transactionUtils";
 
-const client = Client.create(
-  "https://gnfd-testnet-fullnode-tendermint-us.bnbchain.org",
-  "5600"
-);
+class StorageProvService {
+  public async listSP() {
+    const client = await newClient();
+    const config = await ConfigService.getInstance().getConfig();
 
-async function listSP() {
-  const spInfo = await client.sp.getStorageProviders();
-  spInfo.forEach((i) => {
-    console.log(`----------------------
+    let spInfo
+    try {
+      spInfo = await client.sp.getStorageProviders();
+    } catch(ex) {
+      throw new Error("Unable to get storage providers")
+    }
+    spInfo.forEach((i) => {
+      console.log(`Storage provider ${spInfo[i]}`)
+      console.log(`----------------------
                     ${JSON.stringify(i)}}
                  ----------------------`);
-  });
-}
+    });
+  }
 
-async function querySP(
-  endpoint: string // "<Storage Provider endpoint>",
-) {
-  const spArr = await client.sp.getStorageProviders();
-  const sp = spArr.find((i) => i.endpoint === endpoint);
-  const spInfo = await client.sp.getStorageProviderInfo(sp.operatorAddress);
-  console.log(spInfo);
-}
+  public async querySP(
+      endpoint: string // "<Storage Provider endpoint>",
+  ) {
+    const client = await newClient();
+    const config = await ConfigService.getInstance().getConfig();
 
-async function getQuotaPrice(
-  endpoint: string // "<Storage Provider endpoint>"
-) {
-  const spInfo = await client.sp.getStorageProviders();
-  const sp = spInfo.find((i) => i.endpoint === endpoint);
-  const spTx = await client.sp.getStoragePriceByTime(sp.operatorAddress);
-  console.log("Quota price", spTx.readPrice);
-  console.log("Store price", spTx.storePrice);
-}
+    let spArr
+    try {
+      spArr = await client.sp.getStorageProviders();
+    } catch(ex) {
+      throw new Error("Unable to fetch storage providers")
+    }
+    const sp = spArr.find((i) => i.endpoint === endpoint);
+    let spInfo
+    try {
+      spInfo = await client.sp.getStorageProviderInfo(sp.operatorAddress);
+    } catch(ex) {
+      throw new Error("Unable to get storage provider information")
+    }
+    console.log(
+        `Storage provider by endpoints ${endpoint} is characterized by ${spInfo}.`
+    );
+  }
 
-module.exports = {
-  listSP,
-  querySP,
-  getQuotaPrice,
-};
+  public async getQuotaPrice(
+      endpoint: string // "<Storage Provider endpoint>"
+  ) {
+    const client = await newClient();
+    const config = await ConfigService.getInstance().getConfig();
+
+    let spArr
+    try {
+      spArr = await client.sp.getStorageProviders();
+    } catch(ex) {
+      throw new Error("Unable to fetch storage providers")
+    }
+    const sp = spArr.find((i) => i.endpoint === endpoint);
+    let spTx
+    try {
+      spTx = await client.sp.getStoragePriceByTime(sp.operatorAddress);
+    } catch(ex) {
+      throw new Error("Unable to read from storage provider")
+    }
+    console.log(
+        `Quota price is ${spTx.readPrice} and Store price is ${spTx.storePrice}`
+    );
+  }
+}
