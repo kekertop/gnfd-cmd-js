@@ -10,8 +10,8 @@ import {option} from "../cli-decorators/option";
 
 @commandGroup({ prefix: "head", description: "Head operations" })
 class HeadService {
-  @command({ name: "headobj", description: "Get object head" })
-  public async headObject(
+  @command({ name: "object", description: "Get object head" })
+  public async object(
       @argument({
         description: "object url to get head from",
         alias: "object-url",
@@ -37,8 +37,8 @@ class HeadService {
     );
   }
 
-  @command({ name: "headbucket", description: "Get bucket head" })
-  public async headBucket(
+  @command({ name: "bucket", description: "Get bucket head" })
+  public async bucket(
       @argument({
         description: "bucket url to get head from",
         alias: "bucket-url",
@@ -59,8 +59,8 @@ class HeadService {
     );
   }
 
-  @command({ name: "headgroup", description: "Get group head" })
-  public async headGroup(
+  @command({ name: "group", description: "Get group head" })
+  public async group(
       @argument({
         description: "group url to get head from",
         alias: "group-url",
@@ -91,8 +91,8 @@ class HeadService {
     );
   }
 
-  @command({ name: "headgroupmember", description: "Get group member" })
-  public async headGroupMember(
+  @command({ name: "group-member", description: "Get group member" })
+  public async groupMember(
       @argument({
         description: "group url to get head from",
         alias: "group-url",
